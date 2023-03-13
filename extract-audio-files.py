@@ -44,11 +44,17 @@ for long_recording in long_recordings:
         if long_start_datetime <= sample_datetime <= long_end_datetime:
             recordings_dict[long_start_datetime].append(sample_recording)
 
-print(recordings_dict)
+# print(recordings_dict)
 
-# Converting into dictionary format to print key and value differently
+# Filtering key value pairs which has the values in it
 
-# for key, value in recordings_dict.items():
+filtered_recordings_dict = {}
+for key, value in recordings_dict.items():
+    if value:
+        filtered_recordings_dict[key] = value
+
+# print(filtered_recordings_dict)
+
 #     key_str = key.strftime("%Y%m%d_%H%M%S")
 
 #     key_str = key_str + ".wav"
