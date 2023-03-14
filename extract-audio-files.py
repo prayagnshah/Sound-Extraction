@@ -63,9 +63,6 @@ for key, value in recordings_dict.items():
 
 for key, value in filtered_recordings_dict.items():
 
-    # Loading the 3-hour audio recording file
-    audio_file = AudioSegment.from_wav(os.path.join(directory, key))
-
     # Loop through each specified snippet in the value
     for snippet in value:
         start_time_str = os.path.splitext(snippet)[0]
@@ -75,9 +72,17 @@ for key, value in filtered_recordings_dict.items():
             start_time_str.split("_")[1], "%H%M%S")
 
         # 3 minutes increment for extracting audio and converting to milliseconds as AudioSegment only accepts that
-        end_time = start_time + datetime.timedelta(milliseconds=180000)
+        end_time = start_time + datetime.timedelta(minutes=3)
 
-        # Extracting the audio snippet
-        # audio_snippet = audio_file[start_time:end_time]
-        # print(audio_snippet)
-        # audio_snippet.export(os.path.join(directory, snippet), format="wav")
+        # Loading the 3-hour audio recording file
+        audio_file = AudioSegment.from_wav(os.path.join(directory, key))
+
+        # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants ms
+
+        start_time_ms = start_time.hour * 3600000 + \
+            start_time.minute * 60000 + start_time.second * 1000
+        end_time_ms = end_time.hour * 3600000 + \
+            end_time.minute * 60000 + end_time.second * 1000
+        three_minute_audio = audio_file[start_time_ms:end_time_ms]
+
+        three_minute_audio.export(f"{start_time_str}.wav", format="wav")
