@@ -1,5 +1,6 @@
 import datetime
 import os
+from pydub import AudioSegment
 
 # Getting all the files in the directory
 
@@ -46,18 +47,37 @@ for long_recording in long_recordings:
 
 # print(recordings_dict)
 
+dir = "C:\\Users\\ShahP\\OneDrive - EC-EC\\owlhead-testing-recordings"
+
 # Filtering key value pairs which has the values in it
 
 filtered_recordings_dict = {}
 for key, value in recordings_dict.items():
     if value:
-        filtered_recordings_dict[key] = value
+        key_str = key.strftime("%Y%m%dT%H%M%S") + ".wav"
+        filtered_recordings_dict[key_str] = value
 
 # print(filtered_recordings_dict)
 
-#     key_str = key.strftime("%Y%m%d_%H%M%S")
+# Looping through each key-value pair
 
-#     key_str = key_str + ".wav"
+for key, value in filtered_recordings_dict.items():
 
-#     values_str = [str(val) for val in value]
-#     print(key_str, values_str)
+    # Loading the 3-hour audio recording file
+    audio_file = AudioSegment.from_wav(os.path.join(directory, key))
+
+    # Loop through each specified snippet in the value
+    for snippet in value:
+        start_time_str = os.path.splitext(snippet)[0]
+
+        # Extract the start and end time for the snippet and parsing string as datetime object
+        start_time = datetime.datetime.strptime(
+            start_time_str.split("_")[1], "%H%M%S")
+
+        # 3 minutes increment for extracting audio and converting to milliseconds as AudioSegment only accepts that
+        end_time = start_time + datetime.timedelta(milliseconds=180000)
+
+        # Extracting the audio snippet
+        # audio_snippet = audio_file[start_time:end_time]
+        # print(audio_snippet)
+        # audio_snippet.export(os.path.join(directory, snippet), format="wav")
