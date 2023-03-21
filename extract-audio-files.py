@@ -46,9 +46,6 @@ for long_recording in long_recordings:
 
     long_end_datetime = long_start_datetime + duration
 
-    # long_end_datetime = long_start_datetime + \
-    #     datetime.timedelta(hours=2, minutes=59, seconds=59)
-
     # Create an empty list to hold sample recordings that fall within this long recording's time frame
     recordings_dict[long_start_datetime] = []
 
@@ -64,9 +61,6 @@ for long_recording in long_recordings:
         if long_start_datetime <= sample_datetime <= long_end_datetime:
             recordings_dict[long_start_datetime].append(sample_recording)
 
-# print(recordings_dict)
-
-# dir = "C:/Users/ShahP/Documents/extract-audio-files-wav"
 
 # Filtering key value pairs which has the values in it
 
@@ -76,41 +70,55 @@ for key, value in recordings_dict.items():
         key_str = key.strftime("%Y%m%dT%H%M%S") + ".wav"
         filtered_recordings_dict[key_str] = value
 
-print(filtered_recordings_dict)
+# print(filtered_recordings_dict)
 
-# # Looping through each key-value pair
+# Looping through each key-value pair
 
 for key, value in filtered_recordings_dict.items():
 
     # Loading the 3-hour audio recording file
     audio_file = AudioSegment.from_wav(os.path.join(directory, key))
-    # print(audio_file)
 
-    # # Loop through each specified snippet in the value
+    # Splitting the key values into datetime
+
+    split = os.path.splitext(key)[0]
+
+    # Loop through each specified snippet in the value
+
     for snippet in value:
         start_time_str = os.path.splitext(snippet)[0]
         # print(start_time_str)
 
         # Extract the start and end time for the snippet and parsing string as datetime object
+
         start_time = datetime.datetime.strptime(
             start_time_str, "%Y%m%d_%H%M%S")
 
-        # print(start_time)
+        # Getting the start time of the audio file from the actual recordings
 
-        # 3 minutes increment for extracting audio and converting to milliseconds as AudioSegment only accepts that
+        start_time_parent = datetime.datetime.strptime(
+            split, "%Y%m%dT%H%M%S")
+
+        # Getting the actual start time of the snippet in the audio file
+
+        snippet_start_time = start_time - start_time_parent
+
+        # Converting into milliseconds as Audio segment accepts only ms
+
+        snippet_start_time_ms = (
+            snippet_start_time).total_seconds() * 1000
+
+        # 3 minutes increment for extracted audio and converting to milliseconds as AudioSegment only accepts that
         end_time = start_time + datetime.timedelta(minutes=3)
-        # print(end_time)
 
-#     # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
+        # Trying to get the snippet's end time from actual recording
 
-    start_time_ms = start_time.hour * 3600000 + \
-        start_time.minute * 60000 + start_time.second * 1000
-    end_time_ms = end_time.hour * 10800000 + \
-        end_time.minute * 180000 + end_time.second * 3000
+        snippet_end_time = snippet_start_time + datetime.timedelta(minutes=3)
+        snippet_end_time_ms = snippet_end_time.total_seconds() * 1000
 
-    three_minute_audio = audio_file[start_time_ms:end_time_ms]
+        # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
 
-#     # print(three_minute_audio)
+        three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
 
-    output = three_minute_audio.export(
-        f"{start_time_str}.wav", format="wav")
+        output = three_minute_audio.export(
+            f"{start_time_str}.wav", format="wav")
