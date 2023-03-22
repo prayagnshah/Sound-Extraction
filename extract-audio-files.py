@@ -1,16 +1,38 @@
 import datetime
 import os
+import csv
 from pydub import AudioSegment
+
 
 # Getting all the files in the directory
 
-directory = "C:/Users/ShahP/Documents/extract-audio-files-wav"
+directory = "D:/owlsHead/rawData/SD3_20220614/20210701"
 all_files = os.listdir(directory)
+
+
+with open('C:/Users/ShahP/Downloads/OwlsHead_RecordingDrawTEST.csv', 'r') as files:
+
+    # Creating the csv object
+
+    csv_reader = csv.reader(files)
+
+    # Reading the header row
+
+    header = next(csv_reader)
+
+    # Finding the index column
+
+    sampleFile_index = header.index('sampleFile')
+
+    # storing the values in list so that it can be used once the file is closed
+
+    rows = list(csv_reader)
 
 
 # Filtering the sample recordings
 
-sample_recordings = [file for file in all_files if "_" in file]
+sample_recordings = [row[sampleFile_index] for row in rows]
+
 
 # Filtering in actual recordings
 
@@ -50,6 +72,7 @@ for long_recording in long_recordings:
     recordings_dict[long_start_datetime] = []
 
     for sample_recording in sample_recordings:
+        # print(sample_recording)
 
         file, ext = os.path.splitext(sample_recording)
 
@@ -61,7 +84,7 @@ for long_recording in long_recordings:
         if long_start_datetime <= sample_datetime <= long_end_datetime:
             recordings_dict[long_start_datetime].append(sample_recording)
 
-
+# print(recordings_dict)
 # Filtering key value pairs which has the values in it
 
 filtered_recordings_dict = {}
