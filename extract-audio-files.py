@@ -69,29 +69,21 @@ for long_recording in long_recordings:
     long_end_datetime = long_start_datetime + duration
 
     # Create an empty list to hold sample recordings that fall within this long recording's time frame
-    recordings_dict[long_start_datetime] = []
+    # Using if condition to check that sample recording falls into long recording
+    # Finally producing the output: sample_recording
 
-    for sample_recording in sample_recordings:
-        # print(sample_recording)
+    recordings_dict[long_start_datetime] = [
+        sample_recording for sample_recording in sample_recordings
+        if long_start_datetime <= datetime.datetime.strptime(
+            os.path.splitext(sample_recording)[0], "%Y%m%d_%H%M%S") <= long_end_datetime
+    ]
 
-        file, ext = os.path.splitext(sample_recording)
 
-        # Get the datetime of the sample recording
-        sample_datetime = datetime.datetime.strptime(
-            file, "%Y%m%d_%H%M%S")
+# Removing the empty lists and showing the output with the data which has files in it
 
-        # Check if the sample recording falls within the current long recording's time frame
-        if long_start_datetime <= sample_datetime <= long_end_datetime:
-            recordings_dict[long_start_datetime].append(sample_recording)
-
-# print(recordings_dict)
-# Filtering key value pairs which has the values in it
-
-filtered_recordings_dict = {}
-for key, value in recordings_dict.items():
-    if value:
-        key_str = key.strftime("%Y%m%dT%H%M%S") + ".wav"
-        filtered_recordings_dict[key_str] = value
+filtered_recordings_dict = {
+    key.strftime("%Y%m%dT%H%M%S") + ".wav": value for key, value in recordings_dict.items() if value
+}
 
 # print(filtered_recordings_dict)
 
@@ -104,7 +96,7 @@ for key, value in filtered_recordings_dict.items():
 
     # Splitting the key values into datetime
 
-    split = os.path.splitext(key)[0]
+    split_key = os.path.splitext(key)[0]
 
     # Loop through each specified snippet in the value
 
@@ -120,7 +112,7 @@ for key, value in filtered_recordings_dict.items():
         # Getting the start time of the audio file from the actual recordings
 
         start_time_parent = datetime.datetime.strptime(
-            split, "%Y%m%dT%H%M%S")
+            split_key, "%Y%m%dT%H%M%S")
 
         # Getting the actual start time of the snippet in the audio file
 
