@@ -7,16 +7,25 @@ from pydub import AudioSegment
 # Getting all the files in the directory
 # Trying to establish that we can use multiple directories at once
 
-directories = ["D:/owlsHead/rawData/SD3_20220614/20210701", "D:/owlsHead/rawData/SD3_20220614/20210702",
-               "D:/owlsHead/rawData\SD3_20220614/20210703", "D:/owlsHead/rawData/SD3_20220614/20210704"]
+directories = ["D:\\owlsHead\\rawData\\3879193\\20210614\\SD3_20220614\\20210701", "D:\\owlsHead\\rawData\\3879193\\20210614\\SD3_20220614\\20210702",
+               "D:\\owlsHead\\rawData\\3879193\\20210614\\SD3_20220614\20210703"]
 
 # Looping the files of that directory
 
 for directory in directories:
-    all_files = os.listdir(directory)
+
+    # Setting up the exception handler if directory path is wrong still the code will keep moving
+    # In console we will be able to get to know which directory was corrupt
+    try:
+        all_files = os.listdir(directory)
+    except FileNotFoundError as e:
+        print(
+            f"Directory path {directory} not found. Skipping this directory...")
+        continue
+
     # print(all_files)
 
-    with open('C:/Users/ShahP/Downloads/OwlsHead_RecordingDrawTEST.csv', 'r') as files:
+    with open('C:/Users/ShahP/Downloads/OwlsHead3879193_RecordingDraw_n3.csv', 'r') as files:
 
         # Creating the csv object
 
@@ -37,6 +46,7 @@ for directory in directories:
     # Filtering the sample recordings
 
     sample_recordings = [row[sampleFile_index] for row in rows]
+    # print(sample_recordings)
 
     # Filtering in actual recordings
 
@@ -159,4 +169,4 @@ for directory in directories:
             three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
 
             output = three_minute_audio.export(
-                f"{start_time_str}.wav", format="wav")
+                f"owlsHead_{start_time_str}.wav", format="wav")
