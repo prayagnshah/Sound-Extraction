@@ -7,8 +7,7 @@ from pydub import AudioSegment
 # Getting all the files in the directory
 # Trying to establish that we can use multiple directories at once
 
-directories = ["D:\\owlsHead\\rawData\\3879193\\20210614\\SD3_20220614\\20210701", "D:\\owlsHead\\rawData\\3879193\\20210614\\SD3_20220614\\20210702",
-               "D:\\owlsHead\\rawData\\3879193\\20210614\\SD3_20220614\20210703"]
+directories = ["D:\\wolfesIsland\\converted-to-wav-2439985"]
 
 # Looping the files of that directory
 
@@ -25,7 +24,7 @@ for directory in directories:
 
     # print(all_files)
 
-    with open('C:/Users/ShahP/Downloads/OwlsHead3879193_RecordingDraw_n3.csv', 'r') as files:
+    with open('D:\\wolfesIsland\\2439985\\sampleSchedule\\WolfesIsland2439985_RecordingDraw.csv', 'r') as files:
 
         # Creating the csv object
 
@@ -169,4 +168,4 @@ for directory in directories:
             three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
 
             output = three_minute_audio.export(
-                f"owlsHead_{start_time_str}.wav", format="wav")
+                f"wolfesIsland_{start_time_str}.wav", format="wav")
