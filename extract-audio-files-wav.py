@@ -175,5 +175,7 @@ for root, dirs, files in os.walk(root_directory):
 
                 three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
 
+                # User can just change the directory name and then can save the output files. Format is already been provided
+
                 output = three_minute_audio.export(
-                    f"wolfesIsland_{start_time_str}.wav", format="wav")
+                    "D:\\wolfesIsland\\wolfesIsland_{}.wav".format(start_time_str), format="wav")
