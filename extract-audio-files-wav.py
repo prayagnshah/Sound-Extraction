@@ -7,165 +7,173 @@ from pydub import AudioSegment
 # Getting all the files in the directory
 # Trying to establish that we can use multiple directories at once
 
-directories = ["D:\\wolfesIsland\\converted-to-wav-2439985"]
+root_directory = "D:\\wolfesIsland\\converted-to-wav-2439985"
 
-# Looping the files of that directory
+# Using os.walk so that it can traverses to all the directories
 
-for directory in directories:
+for root, dirs, files in os.walk(root_directory):
 
-    # Setting up the exception handler if directory path is wrong still the code will keep moving
-    # In console we will be able to get to know which directory was corrupt
-    try:
-        all_files = os.listdir(directory)
-    except FileNotFoundError as e:
-        print(
-            f"Directory path {directory} not found. Skipping this directory...")
-        continue
+    # Looping the files of that directory. Dirs will take all the inside directories
 
-    # print(all_files)
+    for directory_path in dirs:
 
-    with open('D:\\wolfesIsland\\2439985\\sampleSchedule\\WolfesIsland2439985_RecordingDraw.csv', 'r') as files:
+        directory = os.path.join(root, directory_path)
 
-        # Creating the csv object
-
-        csv_reader = csv.reader(files)
-
-        # Reading the header row
-
-        header = next(csv_reader)
-
-        # Finding the index column
-
-        sampleFile_index = header.index('sampleFile')
-
-        # storing the values in list so that it can be used once the file is closed
-
-        rows = list(csv_reader)
-
-    # Filtering the sample recordings
-
-    sample_recordings = [row[sampleFile_index] for row in rows]
-    # print(sample_recordings)
-
-    # Filtering in actual recordings
-
-    long_recordings = [file for file in all_files if "T" in file]
-    # print(long_recordings)
-
-    recordings_dict = {}
-
-    for long_recording in long_recordings:
-        # print(long_recording)
-
-        # Splitting the .wav extension from the filename so datetime can be parsed
-
-        filename, extension = os.path.splitext(long_recording)
-
-    # Get the start and end datetime of the long recording
-
-        long_start_datetime = datetime.datetime.strptime(
-            filename, "%Y%m%dT%H%M%S")
-
-    # Getting the duration of the recording by checking the next long recording's start time and if there is one then,
-
+        # Setting up the exception handler if directory path is wrong still the code will keep moving
+        # In console we will be able to get to know which directory was corrupt
         try:
-            next_long_recording = long_recordings[long_recordings.index(
-                long_recording) + 1]
-            next_filename, next_extension = os.path.splitext(
-                next_long_recording)
-            duration = datetime.datetime.strptime(
-                next_filename, "%Y%m%dT%H%M%S") - long_start_datetime
+            all_files = os.listdir(directory)
+            # print(all_files)
+        except FileNotFoundError as e:
+            print(
+                f"Directory path {directory} not found. Skipping this directory...")
+            continue
 
-        # Assuming the last recording of 3 hours
+        # print(all_files)
 
-        except IndexError:
+        with open('D:\\wolfesIsland\\2439985\\sampleSchedule\\WolfesIsland2439985_RecordingDraw.csv', 'r') as files:
 
-            duration = datetime.timedelta(hours=3)
+            # Creating the csv object
 
-        long_end_datetime = long_start_datetime + duration
+            csv_reader = csv.reader(files)
 
-        recordings_dict[long_start_datetime] = []
+            # Reading the header row
 
-        # Create an empty list to hold sample recordings that fall within this long recording's time frame
-        # Using if condition to check that sample recording falls into long recording
-        # Finally producing the output: sample_recording
+            header = next(csv_reader)
 
-        for sample_recording in sample_recordings:
-            # print(sample_recording)
+            # Finding the index column
 
-            file, ext = os.path.splitext(sample_recording)
+            sampleFile_index = header.index('sampleFile')
 
-        # Get the datetime of the sample recording
-            sample_datetime = datetime.datetime.strptime(
-                file, "%Y%m%d_%H%M%S")
+            # storing the values in list so that it can be used once the file is closed
 
-        # Check if the sample recording falls within the current long recording's time frame
-            if long_start_datetime <= sample_datetime <= long_end_datetime:
-                recordings_dict[long_start_datetime].append(sample_recording)
-    # print(recordings_dict)
+            rows = list(csv_reader)
 
-    # recordings_dict[long_start_datetime] = [
-    #     sample_recording for sample_recording in sample_recordings
-    #     if long_start_datetime <= datetime.datetime.strptime(
-    #         os.path.splitext(sample_recording)[0], "%Y%m%d_%H%M%S") <= long_end_datetime
-    # ]
+        # Filtering the sample recordings
 
-    # Removing the empty lists and showing the output with the data which has files in it
+        sample_recordings = [row[sampleFile_index] for row in rows]
+        # print(sample_recordings)
 
-    filtered_recordings_dict = {
-        key.strftime("%Y%m%dT%H%M%S") + ".wav": value for key, value in recordings_dict.items() if value
-    }
+        # Filtering in actual recordings
 
-    # print(filtered_recordings_dict)
+        long_recordings = [file for file in all_files if "T" in file]
+        # print(long_recordings)
 
-# Looping through each key-value pair
+        recordings_dict = {}
 
-    for key, value in filtered_recordings_dict.items():
+        for long_recording in long_recordings:
+            # print(long_recording)
 
-        # Loading the 3-hour audio recording file
-        audio_file = AudioSegment.from_wav(os.path.join(directory, key))
+            # Splitting the .wav extension from the filename so datetime can be parsed
 
-        # Splitting the key values into datetime
+            filename, extension = os.path.splitext(long_recording)
 
-        split_key = os.path.splitext(key)[0]
+        # Get the start and end datetime of the long recording
 
-        # Loop through each specified snippet in the value
+            long_start_datetime = datetime.datetime.strptime(
+                filename, "%Y%m%dT%H%M%S")
 
-        for snippet in value:
-            start_time_str = os.path.splitext(snippet)[0]
-            # print(start_time_str)
+        # Getting the duration of the recording by checking the next long recording's start time and if there is one then,
 
-            # Extract the start and end time for the snippet and parsing string as datetime object
+            try:
+                next_long_recording = long_recordings[long_recordings.index(
+                    long_recording) + 1]
+                next_filename, next_extension = os.path.splitext(
+                    next_long_recording)
+                duration = datetime.datetime.strptime(
+                    next_filename, "%Y%m%dT%H%M%S") - long_start_datetime
 
-            start_time = datetime.datetime.strptime(
-                start_time_str, "%Y%m%d_%H%M%S")
+            # Assuming the last recording of 3 hours
 
-            # Getting the start time of the audio file from the actual recordings
+            except IndexError:
 
-            start_time_parent = datetime.datetime.strptime(
-                split_key, "%Y%m%dT%H%M%S")
+                duration = datetime.timedelta(hours=3)
 
-            # Getting the actual start time of the snippet in the audio file
+            long_end_datetime = long_start_datetime + duration
 
-            snippet_start_time = start_time - start_time_parent
+            recordings_dict[long_start_datetime] = []
 
-            # Converting into milliseconds as Audio segment accepts only ms
+            # Create an empty list to hold sample recordings that fall within this long recording's time frame
+            # Using if condition to check that sample recording falls into long recording
+            # Finally producing the output: sample_recording
 
-            snippet_start_time_ms = (
-                snippet_start_time).total_seconds() * 1000
+            for sample_recording in sample_recordings:
+                # print(sample_recording)
 
-            # 3 minutes increment for extracted audio and converting to milliseconds as AudioSegment only accepts that
-            end_time = start_time + datetime.timedelta(minutes=3)
+                file, ext = os.path.splitext(sample_recording)
 
-            # Trying to get the snippet's end time from actual recording
+            # Get the datetime of the sample recording
+                sample_datetime = datetime.datetime.strptime(
+                    file, "%Y%m%d_%H%M%S")
 
-            snippet_end_time = snippet_start_time + \
-                datetime.timedelta(minutes=3)
-            snippet_end_time_ms = snippet_end_time.total_seconds() * 1000
+            # Check if the sample recording falls within the current long recording's time frame
+                if long_start_datetime <= sample_datetime <= long_end_datetime:
+                    recordings_dict[long_start_datetime].append(
+                        sample_recording)
+        # print(recordings_dict)
 
-            # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
+        # recordings_dict[long_start_datetime] = [
+        #     sample_recording for sample_recording in sample_recordings
+        #     if long_start_datetime <= datetime.datetime.strptime(
+        #         os.path.splitext(sample_recording)[0], "%Y%m%d_%H%M%S") <= long_end_datetime
+        # ]
 
-            three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
+        # Removing the empty lists and showing the output with the data which has files in it
 
-            output = three_minute_audio.export(
-                f"wolfesIsland_{start_time_str}.wav", format="wav")
+        filtered_recordings_dict = {
+            key.strftime("%Y%m%dT%H%M%S") + ".wav": value for key, value in recordings_dict.items() if value
+        }
+
+        # print(filtered_recordings_dict)
+
+    # Looping through each key-value pair
+
+        for key, value in filtered_recordings_dict.items():
+
+            # Loading the 3-hour audio recording file
+            audio_file = AudioSegment.from_wav(os.path.join(directory, key))
+
+            # Splitting the key values into datetime
+
+            split_key = os.path.splitext(key)[0]
+
+            # Loop through each specified snippet in the value
+
+            for snippet in value:
+                start_time_str = os.path.splitext(snippet)[0]
+                # print(start_time_str)
+
+                # Extract the start and end time for the snippet and parsing string as datetime object
+
+                start_time = datetime.datetime.strptime(
+                    start_time_str, "%Y%m%d_%H%M%S")
+
+                # Getting the start time of the audio file from the actual recordings
+
+                start_time_parent = datetime.datetime.strptime(
+                    split_key, "%Y%m%dT%H%M%S")
+
+                # Getting the actual start time of the snippet in the audio file
+
+                snippet_start_time = start_time - start_time_parent
+
+                # Converting into milliseconds as Audio segment accepts only ms
+
+                snippet_start_time_ms = (
+                    snippet_start_time).total_seconds() * 1000
+
+                # 3 minutes increment for extracted audio and converting to milliseconds as AudioSegment only accepts that
+                end_time = start_time + datetime.timedelta(minutes=3)
+
+                # Trying to get the snippet's end time from actual recording
+
+                snippet_end_time = snippet_start_time + \
+                    datetime.timedelta(minutes=3)
+                snippet_end_time_ms = snippet_end_time.total_seconds() * 1000
+
+                # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
+
+                three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
+
+                output = three_minute_audio.export(
+                    f"wolfesIsland_{start_time_str}.wav", format="wav")
