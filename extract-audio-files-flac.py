@@ -5,9 +5,9 @@ import soundfile as sf
 
 
 # Getting all the files in the directory
-# We can use root directory and then it will check all the .wav files
+# We can use root directory and then it will check all the .flac files
 
-root_directory = "D:\\wolfesIsland\\2439985\\SD1\\soundFiles"
+root_directory = "D:\\HogIsland\\2019511"
 
 # Using os.walk so that it can traverses to all the directories
 
@@ -21,6 +21,7 @@ for root, dirs, files in os.walk(root_directory):
         # In console we will be able to get to know which directory was corrupt
         try:
             all_files = os.listdir(directory)
+            # print(all_files)
         except FileNotFoundError as e:
             print(
                 f"Directory path {directory} not found. Skipping this directory...")
@@ -28,7 +29,7 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(all_files)
 
-        with open('D:\\wolfesIsland\\2439985\\sampleSchedule\\WolfesIsland2439985_RecordingDraw.csv', 'r') as files:
+        with open('C:\\Users\\ShahP\\Downloads\\bossSample-data.csv', 'r') as files:
 
             # Creating the csv object
 
@@ -61,7 +62,7 @@ for root, dirs, files in os.walk(root_directory):
         for long_recording in long_recordings:
             # print(long_recording)
 
-            # Splitting the .wav extension from the filename so datetime can be parsed
+            # Splitting the .flac extension from the filename so datetime can be parsed
 
             filename, extension = os.path.splitext(long_recording)
 
@@ -127,9 +128,15 @@ for root, dirs, files in os.walk(root_directory):
 
         for key, value in filtered_recordings_dict.items():
 
-            # Loading the original audio recording file while samplefile produces array and samplerate together
-            audio_file, samplerate = sf.read(os.path.join(directory, key))
+            # Trying to put in the exception handler if corrupted audio file comes up then it prints in the console and it will still continue the code instead of breaking up
+
+            try:
+                # Loading the original audio recording file while samplefile produces array and samplerate together
+                audio_file, samplerate = sf.read(os.path.join(directory, key))
             # print(audio_file)
+            except Exception as e:
+                print(f"Error reading audio file {key}: {e}")
+                continue
 
             # Splitting the key values into datetime
 
@@ -171,5 +178,5 @@ for root, dirs, files in os.walk(root_directory):
                 # print(output_filename)
 
                 # Writing the new audio of 3 mins to the desired directory
-                sf.write(os.path.join("D:\\wolfesIsland\\2439985", "WolfesIsland2439985_" + output_filename),
+                sf.write(os.path.join("D:\\HogIsland\\test", "HogsIsland2019511_" + output_filename),
                          snippet_data, samplerate)
