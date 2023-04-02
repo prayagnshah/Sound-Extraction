@@ -7,7 +7,7 @@ from pydub import AudioSegment
 # Getting all the files in the directory
 # Trying to establish that we can use multiple directories at once
 
-root_directory = "D:\\wolfesIsland\\converted-to-wav-2439985"
+root_directory = "C:\\Users\\ShahP\\Music"
 
 # Using os.walk so that it can traverses to all the directories
 
@@ -31,7 +31,7 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(all_files)
 
-        with open('D:\\wolfesIsland\\2439985\\sampleSchedule\\WolfesIsland2439985_RecordingDraw.csv', 'r') as files:
+        with open('C:\\Users\\ShahP\\Downloads\\bossSample-data.csv', 'r') as files:
 
             # Creating the csv object
 
@@ -126,6 +126,9 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(filtered_recordings_dict)
 
+        recording_keys = sorted(os.listdir(directory))
+        # print(recording_keys)
+
     # Looping through each key-value pair
 
         for key, value in filtered_recordings_dict.items():
@@ -156,26 +159,82 @@ for root, dirs, files in os.walk(root_directory):
                 # Getting the actual start time of the snippet in the audio file
 
                 snippet_start_time = start_time - start_time_parent
+                # print(snippet_start_time)
 
                 # Converting into milliseconds as Audio segment accepts only ms
 
                 snippet_start_time_ms = (
                     snippet_start_time).total_seconds() * 1000
+                # print(type(snippet_start_time_ms))
 
                 # 3 minutes increment for extracted audio and converting to milliseconds as AudioSegment only accepts that
-                end_time = start_time + datetime.timedelta(minutes=3)
+                # end_time = start_time + datetime.timedelta(minutes=3)
 
                 # Trying to get the snippet's end time from actual recording
 
                 snippet_end_time = snippet_start_time + \
                     datetime.timedelta(minutes=3)
+
+                # Calculate the end time of the current recording file
+
+                end_time_parent = datetime.datetime.strptime(os.path.splitext(
+                    filtered_recordings_dict[key][-1])[0], "%Y%m%d_%H%M%S")
+
+                # Converting the end time of the snippet into milliseconds
+
                 snippet_end_time_ms = snippet_end_time.total_seconds() * 1000
 
-                # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
+                # Extracting the index of the current key from the list of original recording keys
 
-                three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
+                current_key_index = recording_keys.index(key)
+
+                # Checking the condition if the snippet's end time is beyond the end of the current recording file
+
+                if current_key_index + 1 < len(recording_keys):
+
+                    # Find the next key from the list of original recording keys
+
+                    next_key = recording_keys[current_key_index + 1]
+
+                    # Checking the length of the parent recording file
+
+                    length_parent_snippet = len(audio_file)
+
+                    # Check if the snippet time is beyond the end of current recording file
+
+                    if snippet_end_time_ms > length_parent_snippet:
+
+                        # print(snippet_end_time)
+
+                        next_audio_file = AudioSegment.from_wav(os.path.join(directory, next_key))  # nopep8
+                        # print(next_start_time)
+
+                        # Calculating the remaining time of the snippet in the next recording file
+
+                        remaining_time_ms = snippet_end_time_ms - length_parent_snippet + 1  # nopep8
+
+                        # Extracting the audio from the next recording file
+
+                        remaining_audio = next_audio_file[:int(
+                            remaining_time_ms)]
+
+                        # Concatenate the remaining audio with the current 3-minute snippet
+
+                        three_minute_audio = audio_file[snippet_start_time_ms:] + remaining_audio  # nopep8
+
+                    else:
+
+                        # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
+
+                        three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]  # nopep8
+
+                else:
+
+                    # Extracting the 3 minute audio file using start and end time in milliseconds as Audiosegment only wants that
+
+                    three_minute_audio = audio_file[snippet_start_time_ms:snippet_end_time_ms]
 
                 # User can just change the directory name and then can save the output files. Format is already been provided
 
                 output = three_minute_audio.export(
-                    "D:\\wolfesIsland\\wolfesIsland_{}.wav".format(start_time_str), format="wav")
+                    "C:\\Users\\ShahP\\Music\\HogIsland_{}.wav".format(start_time_str), format="wav")
