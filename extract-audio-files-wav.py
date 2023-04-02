@@ -167,13 +167,9 @@ for root, dirs, files in os.walk(root_directory):
                     snippet_start_time).total_seconds() * 1000
                 # print(type(snippet_start_time_ms))
 
-                # 3 minutes increment for extracted audio and converting to milliseconds as AudioSegment only accepts that
-                # end_time = start_time + datetime.timedelta(minutes=3)
-
                 # Trying to get the snippet's end time from actual recording
 
-                snippet_end_time = snippet_start_time + \
-                    datetime.timedelta(minutes=3)
+                snippet_end_time = snippet_start_time + datetime.timedelta(minutes=3)  # nopep8
 
                 # Calculate the end time of the current recording file
 
@@ -188,38 +184,44 @@ for root, dirs, files in os.walk(root_directory):
 
                 current_key_index = recording_keys.index(key)
 
-                # Checking the condition if the snippet's end time is beyond the end of the current recording file
-
                 if current_key_index + 1 < len(recording_keys):
 
                     # Find the next key from the list of original recording keys
 
                     next_key = recording_keys[current_key_index + 1]
 
-                    # Checking the length of the parent recording file
+                    # Splitting the original recording without the extension
 
-                    length_parent_snippet = len(audio_file)
+                    next_split_key = os.path.splitext(next_key)[0]
+
+                    # Converting the parent recording's end time into datetime object
+
+                    end_time_parent = datetime.datetime.strptime(
+                        next_split_key, "%Y%m%dT%H%M%S")
 
                     # Check if the snippet time is beyond the end of current recording file
 
-                    if snippet_end_time_ms > length_parent_snippet:
+                    # print(snippet_end_time, end_time_parent, start_time_parent)
+                    # Checking the snippet end time is greater than the end time of the parent recording
 
-                        # print(snippet_end_time)
+                    if snippet_end_time > end_time_parent - start_time_parent:
 
                         next_audio_file = AudioSegment.from_wav(os.path.join(directory, next_key))  # nopep8
-                        # print(next_start_time)
 
-                        # Calculating the remaining time of the snippet in the next recording file
+                        # Calculate the remaining time of the snippet
 
-                        remaining_time_ms = snippet_end_time_ms - length_parent_snippet + 1  # nopep8
+                        remaining_time = snippet_end_time - (end_time_parent - start_time_parent)  # nopep8
 
-                        # Extracting the audio from the next recording file
+                        # Converting the remaining time into milliseconds
+
+                        remaining_time_ms = remaining_time.total_seconds() * 1000
+
+                        # Extracting the remaining audio from the next recording
 
                         remaining_audio = next_audio_file[:int(
                             remaining_time_ms)]
 
                         # Concatenate the remaining audio with the current 3-minute snippet
-
                         three_minute_audio = audio_file[snippet_start_time_ms:] + remaining_audio  # nopep8
 
                     else:
