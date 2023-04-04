@@ -7,7 +7,7 @@ from pydub import AudioSegment
 # Getting all the files in the directory
 # Trying to establish that we can use multiple directories at once
 
-root_directory = "C:\\Users\\ShahP\\Music"
+root_directory = "D:\\PortLHebert\\527829"
 
 # Using os.walk so that it can traverses to all the directories
 
@@ -31,7 +31,7 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(all_files)
 
-        with open('C:\\Users\\ShahP\\Downloads\\bossSample-data.csv', 'r') as files:
+        with open('C:\\Users\\ShahP\\Downloads\\bossSampleTest.csv', 'r') as files:
 
             # Creating the csv object
 
@@ -110,13 +110,6 @@ for root, dirs, files in os.walk(root_directory):
                 if long_start_datetime <= sample_datetime <= long_end_datetime:
                     recordings_dict[long_start_datetime].append(
                         sample_recording)
-        # print(recordings_dict)
-
-        # recordings_dict[long_start_datetime] = [
-        #     sample_recording for sample_recording in sample_recordings
-        #     if long_start_datetime <= datetime.datetime.strptime(
-        #         os.path.splitext(sample_recording)[0], "%Y%m%d_%H%M%S") <= long_end_datetime
-        # ]
 
         # Removing the empty lists and showing the output with the data which has files in it
 
@@ -180,9 +173,11 @@ for root, dirs, files in os.walk(root_directory):
 
                 snippet_end_time_ms = snippet_end_time.total_seconds() * 1000
 
-                # Extracting the index of the current key from the list of original recording keys
+       # Extracting the index of the current key from the list of original recording keys
 
                 current_key_index = recording_keys.index(key)
+
+                # Checking the condition if the snippet's end time is beyond the end of the current recording file
 
                 if current_key_index + 1 < len(recording_keys):
 
@@ -190,38 +185,30 @@ for root, dirs, files in os.walk(root_directory):
 
                     next_key = recording_keys[current_key_index + 1]
 
-                    # Splitting the original recording without the extension
+                    # Checking the length of the parent recording file
 
-                    next_split_key = os.path.splitext(next_key)[0]
-
-                    # Converting the parent recording's end time into datetime object
-
-                    end_time_parent = datetime.datetime.strptime(
-                        next_split_key, "%Y%m%dT%H%M%S")
+                    length_parent_snippet = len(audio_file)
 
                     # Check if the snippet time is beyond the end of current recording file
 
-                    # print(snippet_end_time, end_time_parent, start_time_parent)
-                    # Checking the snippet end time is greater than the end time of the parent recording
+                    if snippet_end_time_ms > length_parent_snippet:
 
-                    if snippet_end_time > end_time_parent - start_time_parent:
+                        # print(snippet_end_time)
 
                         next_audio_file = AudioSegment.from_wav(os.path.join(directory, next_key))  # nopep8
+                        # print(next_start_time)
 
-                        # Calculate the remaining time of the snippet
+                        # Calculating the remaining time of the snippet in the next recording file
 
-                        remaining_time = snippet_end_time - (end_time_parent - start_time_parent)  # nopep8
+                        remaining_time_ms = snippet_end_time_ms - length_parent_snippet + 1  # nopep8
 
-                        # Converting the remaining time into milliseconds
-
-                        remaining_time_ms = remaining_time.total_seconds() * 1000
-
-                        # Extracting the remaining audio from the next recording
+                        # Extracting the audio from the next recording file
 
                         remaining_audio = next_audio_file[:int(
                             remaining_time_ms)]
 
                         # Concatenate the remaining audio with the current 3-minute snippet
+
                         three_minute_audio = audio_file[snippet_start_time_ms:] + remaining_audio  # nopep8
 
                     else:
@@ -239,4 +226,4 @@ for root, dirs, files in os.walk(root_directory):
                 # User can just change the directory name and then can save the output files. Format is already been provided
 
                 output = three_minute_audio.export(
-                    "C:\\Users\\ShahP\\Music\\HogIsland_{}.wav".format(start_time_str), format="wav")
+                    "D:\\PortLHebert\\extracted-files\\PortLHebert527829_{}.wav".format(start_time_str), format="wav")
