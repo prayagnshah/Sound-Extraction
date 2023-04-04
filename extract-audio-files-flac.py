@@ -2,12 +2,14 @@ import os
 import datetime
 import csv
 import soundfile as sf
+import scipy.signal as signal
+import numpy as np
 
 
 # Getting all the files in the directory
 # We can use root directory and then it will check all the .flac files
 
-root_directory = "D:\\HogIsland\\2019511"
+root_directory = "D:\\WolfesIsland\\698161\\SD1\\soundFiles"
 
 # Using os.walk so that it can traverses to all the directories
 
@@ -29,7 +31,7 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(all_files)
 
-        with open('C:\\Users\\ShahP\\Downloads\\bossSample-data.csv', 'r') as files:
+        with open('C:\\Users\\ShahP\\Downloads\\bossSampleTest.csv', 'r') as files:
 
             # Creating the csv object
 
@@ -124,6 +126,10 @@ for root, dirs, files in os.walk(root_directory):
         # Set the duration for the portion of the audio file to extract
         duration = datetime.timedelta(minutes=3)
 
+        # Sorting the recordings by key
+
+        recording_keys = sorted(os.listdir(directory))
+
         # Looping through each key-value pair
 
         for key, value in filtered_recordings_dict.items():
@@ -168,15 +174,62 @@ for root, dirs, files in os.walk(root_directory):
                 end_frame = int(
                     (snippet_start_time + duration).total_seconds() * samplerate)
 
-                # Extract the portion of the audio data using numpy array indexing because soundfile data comes in integers
+                # Checking the index of the current key
 
-                snippet_data = audio_file[start_frame:end_frame]
+                current_key_index = recording_keys.index(key)
+
+                # Due to the fact that the audio files are not of 3 mins duration so we need to check if the duration is less than 3 mins then we need to add the next audio file to it
+
+                if current_key_index + 1 < len(recording_keys):
+
+                    # According to the flac recorders, proper recording is not there so using 3 mins 6 seconds to get 3 mins extraction
+
+                    duration_new = datetime.timedelta(minutes=3, seconds=6)
+
+                    next_key = recording_keys[current_key_index + 1]
+
+                    next_key_start_time = datetime.datetime.strptime(
+                        os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
+
+                    # Checking if the duration of the snippet is greater than the next key's start time
+
+                    if start_time + duration_new > next_key_start_time:
+                        time_duration = next_key_start_time - start_time
+
+                        # Loading the next audio file
+
+                        next_audio_file, next_samplerate = sf.read(
+                            os.path.join(directory, next_key))
+
+                        # Getting the remaining duration of the snippet
+
+                        remaining_duration = duration_new - time_duration
+
+                        # Getting the remaining audio from the next audio file
+
+                        remaining_audio = next_audio_file[:int(
+                            remaining_duration.total_seconds() * next_samplerate)]
+
+                        # Concatenating the audio files
+
+                        snippet_data = np.concatenate((
+                            audio_file[start_frame:], remaining_audio))
+                        # print(remaining_audio)
+                        # snippet_data = audio_file[start_frame:] + resampled_remaining_audio   # nopep8
+                        # print(snippet_data)
+
+                    else:
+                        snippet_data = audio_file[start_frame:end_frame]
+
+                else:
+                    # Extract the portion of the audio data using numpy array indexing because soundfile data comes in integers
+
+                    snippet_data = audio_file[start_frame:end_frame]
 
                 # Write the extracted audio data to a new file
 
                 output_filename = os.path.splitext(snippet)[0] + '.flac'
-                # print(output_filename)
 
                 # Writing the new audio of 3 mins to the desired directory
-                sf.write(os.path.join("D:\\HogIsland\\test", "HogsIsland2019511_" + output_filename),
+                sf.write(os.path.join("D:\\WolfesIsland\\extracted-files-6sec", "WolfesIsland698161_" + output_filename),
                          snippet_data, samplerate)
