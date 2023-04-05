@@ -16,7 +16,6 @@ def get_directories(root_directory):
 
             all_files = os.listdir(directory)
 
-    # print(all_files, directory)
     return directory, all_files
 
 
@@ -54,8 +53,8 @@ def process_recordings(directory, all_files, sample_recordings):
     """
     Processes long recordings and filters sample recordings to find out the samples in each long recording.
     """
-    long_recordings = [file.split("_")[1].split("-")[0] for file in all_files if "T" in file]  # nopep8
-    print(long_recordings)
+    long_recordings = [file for file in all_files if "T" in file]  # nopep8
+    # print(long_recordings)
     long_recordings.sort()
     recordings_dict = {}
 
@@ -95,7 +94,7 @@ def process_recordings(directory, all_files, sample_recordings):
     return filtered_recordings_dict
 
 
-def extract_audio_segments(directory, filtered_recordings_dict, output_directory):
+def extract_audio_segments(directory, filtered_recordings_dict, output_directory, site_name):
 
     # Sorting the original recordings in ascending order
 
@@ -164,7 +163,7 @@ def extract_audio_segments(directory, filtered_recordings_dict, output_directory
             # Exporting the audio segment to a wav file
 
             output_path = os.path.join(
-                output_directory, "PortLHebert527829_{}.wav".format(start_time_str))
+                output_directory, "{}_{}.wav".format(site_name, start_time_str))
             three_minute_audio.export(output_path, format="wav")
 
             # Appending the audio segment and the output path to the list
@@ -191,6 +190,7 @@ def extract_audio_segments(directory, filtered_recordings_dict, output_directory
 # Getting the directories and files
 root_directory = "C:\\Users\\ShahP\\Documents\\extract-audio-files"
 output_directory = "C:\\Users\\ShahP\\Documents\\extract-audio-files"
+site_name = "PortLHebert527829"
 directory, all_files = get_directories(root_directory)
 
 # Reading the csv file and can change the column name to read the sample recordings
@@ -203,9 +203,8 @@ sample_recordings = read_csv_file(csv_file_path, sampleFile)
 
 filtered_recordings_dict = process_recordings(
     directory, all_files, sample_recordings)
-print(filtered_recordings_dict)
 
 # Extracting the audio segments from the long recordings
 
-# audio_segments, file_paths, output_directory = extract_audio_segments(
-#     directory, filtered_recordings_dict, output_directory)
+audio_segments, file_paths, output_directory = extract_audio_segments(
+    directory, filtered_recordings_dict, output_directory, site_name)
