@@ -2,6 +2,7 @@ import os
 import csv
 from datetime import datetime, timedelta
 from pydub import AudioSegment
+import argparse
 
 
 def get_directories(root_directory):
@@ -53,7 +54,8 @@ def process_recordings(directory, all_files, sample_recordings):
     """
     Processes long recordings and filters sample recordings to find out the samples in each long recording.
     """
-    long_recordings = [file for file in all_files if "T" in file]
+    long_recordings = [file.split("_")[1].split("-")[0] for file in all_files if "T" in file]  # nopep8
+    print(long_recordings)
     long_recordings.sort()
     recordings_dict = {}
 
@@ -173,8 +175,20 @@ def extract_audio_segments(directory, filtered_recordings_dict, output_directory
     return audio_segments, file_paths, output_directory
 
 
-# Getting the directories and files
+# # Create an ArgumentParser object
+# parser = argparse.ArgumentParser(
+#     description='A program that will help to extract recording from the actual long recordings.')
 
+# parser.add_argument('-r', '--root_directory', type=str, required=True, help='The root directory of the long recordings')  # nopep8
+# parser.add_argument('-o', '--output_directory', type=str, required=True, help='The output directory to store the extracted audio segments')  # nopep8
+# parser.add_argument('-c', '--csv_file_path', type=str, required=True, help='The path of the csv file')  # nopep8
+# parser.add_argument('-d', '--duration', type=int, help='The duration of the audio segment in minutes')  # nopep8
+
+# # Parse the command line arguments
+# args = parser.parse_args()
+
+
+# Getting the directories and files
 root_directory = "C:\\Users\\ShahP\\Documents\\extract-audio-files"
 output_directory = "C:\\Users\\ShahP\\Documents\\extract-audio-files"
 directory, all_files = get_directories(root_directory)
@@ -189,8 +203,9 @@ sample_recordings = read_csv_file(csv_file_path, sampleFile)
 
 filtered_recordings_dict = process_recordings(
     directory, all_files, sample_recordings)
+print(filtered_recordings_dict)
 
 # Extracting the audio segments from the long recordings
 
-audio_segments, file_paths, output_directory = extract_audio_segments(
-    directory, filtered_recordings_dict, output_directory)
+# audio_segments, file_paths, output_directory = extract_audio_segments(
+#     directory, filtered_recordings_dict, output_directory)
