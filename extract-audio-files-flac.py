@@ -7,7 +7,7 @@ import numpy as np
 
 # Getting all the files in the directory
 # We can use root directory and then it will check all the .flac files
-root_directory = "C:\\Users\\ShahP\\Documents\\extract-audio-files"
+root_directory = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\soundFiles"
 
 # Using os.walk so that it can traverses to all the directories
 
@@ -29,7 +29,7 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(all_files)
 
-        with open('C:\\Users\\ShahP\\Downloads\\bossSampleTest.csv', 'r') as files:
+        with open('D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\sampleSchedule\\CoffinIsland1901229_RecordingDraw_n2.csv', 'r') as files:
 
             # Creating the csv object
 
@@ -122,113 +122,113 @@ for root, dirs, files in os.walk(root_directory):
 
         # print(filtered_recordings_dict)
 
-# Set the duration for the portion of the audio file to extract
-duration = datetime.timedelta(minutes=3)
+        # Set the duration for the portion of the audio file to extract
+        duration = datetime.timedelta(minutes=3)
 
-# Sorting the recordings by key
+        # Sorting the recordings by key
 
-recording_keys = sorted(os.listdir(directory))
+        recording_keys = sorted(os.listdir(directory))
 
-# Looping through each key-value pair
+        # Looping through each key-value pair
 
-for key, value in filtered_recordings_dict.items():
+        for key, value in filtered_recordings_dict.items():
 
-    # Trying to put in the exception handler if corrupted audio file comes up then it prints in the console and it will still continue the code instead of breaking up
+            # Trying to put in the exception handler if corrupted audio file comes up then it prints in the console and it will still continue the code instead of breaking up
 
-    try:
-        # Loading the original audio recording file while samplefile produces array and samplerate together
-        audio_file, samplerate = sf.read(os.path.join(directory, key))
-    # print(audio_file)
-    except Exception as e:
-        print(f"Error reading audio file {key}: {e}")
-        continue
+            try:
+                # Loading the original audio recording file while samplefile produces array and samplerate together
+                audio_file, samplerate = sf.read(os.path.join(directory, key))
+            # print(audio_file)
+            except Exception as e:
+                print(f"Error reading audio file {key}: {e}")
+                continue
 
-    # Splitting the key values into datetime
+            # Splitting the key values into datetime
 
-    split_key = os.path.splitext(key)[0]
-    # Getting the start time of the audio file from the actual recordings
+            split_key = os.path.splitext(key)[0]
+            # Getting the start time of the audio file from the actual recordings
 
-    start_time_parent = datetime.datetime.strptime(
-        split_key, "%Y%m%dT%H%M%S")
+            start_time_parent = datetime.datetime.strptime(
+                split_key, "%Y%m%dT%H%M%S")
 
-    # Loop through each specified snippet in the value
+            # Loop through each specified snippet in the value
 
-    for snippet in value:
-        start_time_str = os.path.splitext(snippet)[0]
-        # print(start_time_str)
+            for snippet in value:
+                start_time_str = os.path.splitext(snippet)[0]
+                # print(start_time_str)
 
-        # Extract the start and end time for the snippet and parsing string as datetime object
+                # Extract the start and end time for the snippet and parsing string as datetime object
 
-        start_time = datetime.datetime.strptime(
-            start_time_str, "%Y%m%d_%H%M%S")
+                start_time = datetime.datetime.strptime(
+                    start_time_str, "%Y%m%d_%H%M%S")
 
-        # Getting the actual start time of the snippet in the audio file
+                # Getting the actual start time of the snippet in the audio file
 
-        snippet_start_time = start_time - start_time_parent
+                snippet_start_time = start_time - start_time_parent
 
-        # Calculate the start and end frame indices for the portion of the audio file to extract into seconds
+                # Calculate the start and end frame indices for the portion of the audio file to extract into seconds
 
-        start_frame = int(
-            snippet_start_time.total_seconds() * samplerate)
-        end_frame = int(
-            (snippet_start_time + duration).total_seconds() * samplerate)
+                start_frame = int(
+                    snippet_start_time.total_seconds() * samplerate)
+                end_frame = int(
+                    (snippet_start_time + duration).total_seconds() * samplerate)
 
-        # Checking the index of the current key
+                # Checking the index of the current key
 
-        current_key_index = recording_keys.index(key)
+                current_key_index = recording_keys.index(key)
 
-        # Due to the fact that the audio files are not of 3 mins duration so we need to check if the duration is less than 3 mins then we need to add the next audio file to it
+                # Due to the fact that the audio files are not of 3 mins duration so we need to check if the duration is less than 3 mins then we need to add the next audio file to it
 
-        if current_key_index + 1 < len(recording_keys):
+                if current_key_index + 1 < len(recording_keys):
 
-            # According to the flac recorders, proper recording is not there so using 3 mins 6 seconds to get 3 mins extraction
+                    # According to the flac recorders, proper recording is not there so using 3 mins 6 seconds to get 3 mins extraction
 
-            duration_new = datetime.timedelta(minutes=3, seconds=6)
+                    duration_new = datetime.timedelta(minutes=3, seconds=6)
 
-            next_key = recording_keys[current_key_index + 1]
+                    next_key = recording_keys[current_key_index + 1]
 
-            next_key_start_time = datetime.datetime.strptime(
-                os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
+                    next_key_start_time = datetime.datetime.strptime(
+                        os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
 
-            # Checking if the duration of the snippet is greater than the next key's start time
+                    # Checking if the duration of the snippet is greater than the next key's start time
 
-            if start_time + duration_new > next_key_start_time:
-                time_duration = next_key_start_time - start_time
+                    if start_time + duration_new > next_key_start_time:
+                        time_duration = next_key_start_time - start_time
 
-                # Loading the next audio file
+                        # Loading the next audio file
 
-                next_audio_file, next_samplerate = sf.read(
-                    os.path.join(directory, next_key))
+                        next_audio_file, next_samplerate = sf.read(
+                            os.path.join(directory, next_key))
 
-                # Getting the remaining duration of the snippet
+                        # Getting the remaining duration of the snippet
 
-                remaining_duration = duration_new - time_duration
+                        remaining_duration = duration_new - time_duration
 
-                # Getting the remaining audio from the next audio file
+                        # Getting the remaining audio from the next audio file
 
-                remaining_audio = next_audio_file[:int(
-                    remaining_duration.total_seconds() * next_samplerate)]
+                        remaining_audio = next_audio_file[:int(
+                            remaining_duration.total_seconds() * next_samplerate)]
 
-                # Concatenating the audio files
+                        # Concatenating the audio files
 
-                snippet_data = np.concatenate((
-                    audio_file[start_frame:], remaining_audio))
-                # print(remaining_audio)
-                # snippet_data = audio_file[start_frame:] + resampled_remaining_audio   # nopep8
-                # print(snippet_data)
+                        snippet_data = np.concatenate((
+                            audio_file[start_frame:], remaining_audio))
+                        # print(remaining_audio)
+                        # snippet_data = audio_file[start_frame:] + resampled_remaining_audio   # nopep8
+                        # print(snippet_data)
 
-            else:
-                snippet_data = audio_file[start_frame:end_frame]
+                    else:
+                        snippet_data = audio_file[start_frame:end_frame]
 
-        else:
-            # Extract the portion of the audio data using numpy array indexing because soundfile data comes in integers
+                else:
+                    # Extract the portion of the audio data using numpy array indexing because soundfile data comes in integers
 
-            snippet_data = audio_file[start_frame:end_frame]
+                    snippet_data = audio_file[start_frame:end_frame]
 
-        # Write the extracted audio data to a new file
+                # Write the extracted audio data to a new file
 
-        output_filename = os.path.splitext(snippet)[0] + '.flac'
+                output_filename = os.path.splitext(snippet)[0] + '.flac'
 
-        # Writing the new audio of 3 mins to the desired directory
-        sf.write(os.path.join("C:\\Users\\ShahP\\Documents\\extract-audio-files", "WolfesIsland698161_" + output_filename),
-                 snippet_data, samplerate)
+                # Writing the new audio of 3 mins to the desired directory
+                sf.write(os.path.join("D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\extracted-files", "coffinIsland1901229_" + output_filename),
+                         snippet_data, samplerate)
