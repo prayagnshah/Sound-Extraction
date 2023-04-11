@@ -3,6 +3,7 @@ import datetime
 import csv
 import soundfile as sf
 import numpy as np
+import argparse
 
 
 def get_directories(root_directory):
@@ -132,7 +133,7 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
     # Set the duration for the portion of the audio file to extract
 
-    duration = datetime.timedelta(minutes=3)
+    duration = datetime.timedelta(minutes=args.duration)
 
     # Calling the function to get the directories
 
@@ -204,7 +205,7 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                     # According to the flac recorders, proper recording are not captured so using 3 mins 6 seconds to get 3 mins extraction
 
-                    duration_new = datetime.timedelta(minutes=3, seconds=6)
+                    duration_new = datetime.timedelta(minutes=args.duration, seconds=6)  # nopep8
 
                     next_key = recording_keys[current_key_index + 1]
 
@@ -255,12 +256,27 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
     return export_segment, output_directory
 
 
+# Create an ArgumentParser object
+
+parser = argparse.ArgumentParser(
+    description='A program that will help to extract recording from the actual long recordings.')
+
+parser.add_argument('-r', '--root_directory', type=str, required=True, help='The root directory of the long recordings')  # nopep8
+parser.add_argument('-o', '--output_directory', type=str, required=True, help='The output directory to store the extracted audio segments')  # nopep8
+parser.add_argument('-c', '--csv_file_path', type=str, required=True, help='The path of the csv file')  # nopep8
+parser.add_argument('-d', '--duration', type=int, default=3, help='The duration of the audio segment in minutes')  # nopep8
+parser.add_argument('-s', '--site_name', type=str, required=True,  help='The name of the site')  # nopep8
+
+# Parse the command line arguments
+
+args = parser.parse_args()
+
 # Getting the root directory and output directory from the user
 
-root_directory = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\soundFiles"
-output_directory = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\extracted-files-func"
-site_name = "CoffinIsland1901229_"
-csv_file_path = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\sampleSchedule\\CoffinIsland1901229_RecordingDraw_n2.csv"
+root_directory = args.root_directory
+output_directory = args.output_directory
+site_name = args.site_name
+csv_file_path = args.csv_file_path
 
 # Calling the functions
 
