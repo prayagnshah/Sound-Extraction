@@ -5,127 +5,142 @@ import soundfile as sf
 import numpy as np
 
 
-# Getting all the files in the directory
-# We can use root directory and then it will check all the .flac files
-root_directory = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\soundFiles"
+def get_directories(root_directory):
+    """
+    Gets all directories in the root directory and loops through them.
+    """
+    all_files = []
+    directory = []
 
-# Using os.walk so that it can traverses to all the directories
+    for root, dirs, files in os.walk(root_directory):
+        for directory_path in dirs:
 
-for root, dirs, files in os.walk(root_directory):
+            directory_in = os.path.join(root, directory_path)
+            directory.append(directory_in)
 
-    # Looping the files of that directory. Dirs will take all the inside directories
-    for directory_path in dirs:
-        directory = os.path.join(root, directory_path)
+            all_files_in = os.listdir(directory_in)
 
-        # Setting up the exception handler if directory path is wrong still the code will keep moving
-        # In console we will be able to get to know which directory was corrupt
-        try:
-            all_files = os.listdir(directory)
-            # print(all_files)
-        except FileNotFoundError as e:
-            print(
-                f"Directory path {directory} not found. Skipping this directory...")
-            continue
+            all_files += all_files_in
 
-        # print(all_files)
+    # print(directory)
+    return directory, all_files
 
-        with open('D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\sampleSchedule\\CoffinIsland1901229_RecordingDraw_n2.csv', 'r') as files:
 
-            # Creating the csv object
+def read_csv_file(csv_file_path, sampleFile):
+    """
+    Reads data from a CSV file and filters it based on a column name which has sample audio files.
+    """
+    with open(csv_file_path, 'r') as files:
 
-            csv_reader = csv.reader(files)
+        # Creating the csv object
 
-            # Reading the header row
+        csv_reader = csv.reader(files)
 
-            header = next(csv_reader)
+        # Reading the header row
 
-            # Finding the index column
+        header = next(csv_reader)
 
-            sampleFile_index = header.index('sampleFile')
+        # Finding the index column
 
-            # storing the values in list so that it can be used once the file is closed
+        sampleFile_index = header.index(sampleFile)
 
-            rows = list(csv_reader)
+        # storing the values in list so that it can be used once the file is closed
 
-        # Filtering the sample recordings
+        rows = list(csv_reader)
 
-        sample_recordings = [row[sampleFile_index] for row in rows]
-        # print(sample_recordings)
+    # Filtering the sample recordings
 
-        # Filtering in actual recordings
+    sample_recordings = [row[sampleFile_index] for row in rows]
+    # print(sample_recordings)
 
-        long_recordings = [file for file in all_files if "T" in file]
-        # print(long_recordings)
+    return sample_recordings
 
-        recordings_dict = {}
 
-        for long_recording in long_recordings:
-            # print(long_recording)
+def process_recordings(all_files, sample_recordings):
+    # Filtering in actual recordings
 
-            # Splitting the .flac extension from the filename so datetime can be parsed
+    long_recordings = [
+        file for file in all_files if "T" in file]
 
-            filename, extension = os.path.splitext(long_recording)
+    long_recordings.sort()
+    recordings_dict = {}
+
+    for long_recording in long_recordings:
+
+        # Splitting the .flac extension from the filename so datetime can be parsed
+
+        filename, extension = os.path.splitext(long_recording)
 
         # Get the start and end datetime of the long recording
         # Putting try and except handling because there will be backup file with .flac and we need to avoid it
-            try:
-                long_start_datetime = datetime.datetime.strptime(
-                    filename, "%Y%m%dT%H%M%S")
-            except ValueError:
-                continue
+        try:
+            long_start_datetime = datetime.datetime.strptime(
+                filename, "%Y%m%dT%H%M%S")
+        except ValueError:
+            continue
 
         # Getting the duration of the recording by checking the next long recording's start time and if there is one then,
 
-            try:
-                next_long_recording = long_recordings[long_recordings.index(
-                    long_recording) + 1]
-                next_filename, next_extension = os.path.splitext(
-                    next_long_recording)
+        try:
+            next_long_recording = long_recordings[long_recordings.index(
+                long_recording) + 1]
+            next_filename, next_extension = os.path.splitext(
+                next_long_recording)
 
-                duration = datetime.datetime.strptime(
-                    next_filename, "%Y%m%dT%H%M%S") - long_start_datetime
+            duration = datetime.datetime.strptime(
+                next_filename, "%Y%m%dT%H%M%S") - long_start_datetime
 
-            # Assuming the last recording of 3 hours
+        # Assuming the last recording of 3 hours
 
-            except IndexError:
+        except IndexError:
 
-                duration = datetime.timedelta(hours=3)
+            duration = datetime.timedelta(hours=3)
 
-            long_end_datetime = long_start_datetime + duration
+        long_end_datetime = long_start_datetime + duration
 
-            # Create an empty list to hold sample recordings that fall within this long recording's time frame
+        # Create an empty list to hold sample recordings that fall within this long recording's time frame
 
-            recordings_dict[long_start_datetime] = []
+        recordings_dict[long_start_datetime] = []
 
-            # Using if condition to check that sample recording falls into long recording
-            # Finally producing the output: sample_recording
+        # Using if condition to check that sample recording falls into long recording
+        # Finally producing the output: sample_recording
 
-            for sample_recording in sample_recordings:
-                # print(sample_recording)
+        for sample_recording in sample_recordings:
+            # print(sample_recording)
 
-                file, ext = os.path.splitext(sample_recording)
+            file, ext = os.path.splitext(sample_recording)
 
-            # Get the datetime of the sample recording
-                sample_datetime = datetime.datetime.strptime(
-                    file, "%Y%m%d_%H%M%S")
+        # Get the datetime of the sample recording
+            sample_datetime = datetime.datetime.strptime(
+                file, "%Y%m%d_%H%M%S")
 
-            # Check if the sample recording falls within the current long recording's time frame
-                if long_start_datetime <= sample_datetime <= long_end_datetime:
-                    recordings_dict[long_start_datetime].append(
-                        sample_recording)
+        # Check if the sample recording falls within the current long recording's time frame
+            if long_start_datetime <= sample_datetime <= long_end_datetime:
+                recordings_dict[long_start_datetime].append(
+                    sample_recording)
 
-        # Removing the empty lists and showing the output with the data which has files in it
+    # Removing the empty lists and showing the output with the data which has files in it
 
-        filtered_recordings_dict = {
-            key.strftime("%Y%m%dT%H%M%S") + ".flac": value for key, value in recordings_dict.items() if value
-        }
+    filtered_recordings_dict = {
+        key.strftime("%Y%m%dT%H%M%S") + ".flac": value for key, value in recordings_dict.items() if value
+    }
 
-        # print(filtered_recordings_dict)
+    return filtered_recordings_dict
 
-        # Set the duration for the portion of the audio file to extract
-        duration = datetime.timedelta(minutes=3)
 
-        # Sorting the recordings by key
+def extract_audio_segments(filtered_recordings_dict, output_directory, site_name):
+
+    # Set the duration for the portion of the audio file to extract
+
+    duration = datetime.timedelta(minutes=3)
+
+    # Calling the function to get the directories
+
+    directories, all_files = get_directories(root_directory)
+
+    for directory in directories:
+
+        # Calling the function to get the original audio files
 
         recording_keys = sorted(os.listdir(directory))
 
@@ -133,12 +148,18 @@ for root, dirs, files in os.walk(root_directory):
 
         for key, value in filtered_recordings_dict.items():
 
+            # Checking if the key is in the original audio files
+
+            if key not in recording_keys:
+                continue
+
             # Trying to put in the exception handler if corrupted audio file comes up then it prints in the console and it will still continue the code instead of breaking up
 
             try:
                 # Loading the original audio recording file while samplefile produces array and samplerate together
+
                 audio_file, samplerate = sf.read(os.path.join(directory, key))
-            # print(audio_file)
+
             except Exception as e:
                 print(f"Error reading audio file {key}: {e}")
                 continue
@@ -181,7 +202,7 @@ for root, dirs, files in os.walk(root_directory):
 
                 if current_key_index + 1 < len(recording_keys):
 
-                    # According to the flac recorders, proper recording is not there so using 3 mins 6 seconds to get 3 mins extraction
+                    # According to the flac recorders, proper recording are not captured so using 3 mins 6 seconds to get 3 mins extraction
 
                     duration_new = datetime.timedelta(minutes=3, seconds=6)
 
@@ -213,9 +234,6 @@ for root, dirs, files in os.walk(root_directory):
 
                         snippet_data = np.concatenate((
                             audio_file[start_frame:], remaining_audio))
-                        # print(remaining_audio)
-                        # snippet_data = audio_file[start_frame:] + resampled_remaining_audio   # nopep8
-                        # print(snippet_data)
 
                     else:
                         snippet_data = audio_file[start_frame:end_frame]
@@ -230,5 +248,33 @@ for root, dirs, files in os.walk(root_directory):
                 output_filename = os.path.splitext(snippet)[0] + '.flac'
 
                 # Writing the new audio of 3 mins to the desired directory
-                sf.write(os.path.join("D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\extracted-files", "coffinIsland1901229_" + output_filename),
-                         snippet_data, samplerate)
+
+                export_segment = sf.write(os.path.join(output_directory, site_name + output_filename),
+                                          snippet_data, samplerate)
+
+    return export_segment, output_directory
+
+
+# Getting the root directory and output directory from the user
+
+root_directory = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\soundFiles"
+output_directory = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\extracted-files-func"
+site_name = "CoffinIsland1901229_"
+csv_file_path = "D:\\coffinIsland\\Site ID 1901229\\2022-06-30__2022-07-23\\sampleSchedule\\CoffinIsland1901229_RecordingDraw_n2.csv"
+
+# Calling the functions
+
+directory, all_files = get_directories(root_directory)
+
+sampleFile = "sampleFile"
+sample_recordings = read_csv_file(csv_file_path, sampleFile)
+
+filtered_recordings_dict = process_recordings(all_files, sample_recordings)
+
+
+export_segment, output_directory = extract_audio_segments(
+    filtered_recordings_dict, output_directory, site_name)
+
+
+# filename
+# test cases
