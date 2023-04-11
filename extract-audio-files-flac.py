@@ -212,9 +212,9 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
                     next_key_start_time = datetime.datetime.strptime(
                         os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
 
-                    # Checking if the duration of the snippet is greater than the next key's start time
+                    # Checking if the duration of the snippet is greater than the next key's start time and flag "-span" is used then it won't concatenate the audio files
 
-                    if start_time + duration_new > next_key_start_time:
+                    if not args.original and start_time + duration_new > next_key_start_time:
                         time_duration = next_key_start_time - start_time
 
                         # Loading the next audio file
@@ -266,6 +266,7 @@ parser.add_argument('-o', '--output_directory', type=str, required=True, help='T
 parser.add_argument('-c', '--csv_file_path', type=str, required=True, help='The path of the csv file')  # nopep8
 parser.add_argument('-d', '--duration', type=int, default=3, help='The duration of the audio segment in minutes')  # nopep8
 parser.add_argument('-s', '--site_name', type=str, required=True,  help='The name of the site')  # nopep8
+parser.add_argument('-span', '--original', action='store_true', help='Extract original files instead of spanning')  # nopep8
 
 # Parse the command line arguments
 
