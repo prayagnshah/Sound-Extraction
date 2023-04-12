@@ -120,10 +120,14 @@ def process_recordings(all_files, sample_recordings):
                 recordings_dict[long_start_datetime].append(
                     sample_recording)
 
+    # Storing the user input for the extension
+
+    extension = args.extension
+
     # Removing the empty lists and showing the output with the data which has files in it
 
     filtered_recordings_dict = {
-        key.strftime("%Y%m%dT%H%M%S") + ".flac": value for key, value in recordings_dict.items() if value
+        key.strftime("%Y%m%dT%H%M%S") + extension: value for key, value in recordings_dict.items() if value
     }
 
     return filtered_recordings_dict
@@ -214,7 +218,7 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                     # Checking if the duration of the snippet is greater than the next key's start time and flag "-span" is used then it won't concatenate the audio files
 
-                    if not args.original and start_time + duration_new > next_key_start_time:
+                    if not args.span and start_time + duration_new > next_key_start_time:
                         time_duration = next_key_start_time - start_time
 
                         # Loading the next audio file
@@ -244,9 +248,13 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                     snippet_data = audio_file[start_frame:end_frame]
 
+                # Storing the user input for the extension
+
+                extension = args.extension
+
                 # Write the extracted audio data to a new file
 
-                output_filename = os.path.splitext(snippet)[0] + '.flac'
+                output_filename = os.path.splitext(snippet)[0] + extension
 
                 # Writing the new audio of 3 mins to the desired directory
 
@@ -266,7 +274,8 @@ parser.add_argument('-o', '--output_directory', type=str, required=True, help='T
 parser.add_argument('-c', '--csv_file_path', type=str, required=True, help='The path of the csv file')  # nopep8
 parser.add_argument('-d', '--duration', type=int, default=3, help='The duration of the audio segment in minutes')  # nopep8
 parser.add_argument('-s', '--site_name', type=str, required=True,  help='The name of the site')  # nopep8
-parser.add_argument('-span', '--original', action='store_true', help='Extract original files instead of spanning')  # nopep8
+parser.add_argument('-span', '--span', action='store_true', help='Extract original files instead of spanning')  # nopep8
+parser.add_argument('-e', '--extension', type=str, choices=['.wav', '.flac'], default='.flac', help='The extension of the original audio files')  # nopep8
 
 # Parse the command line arguments
 
