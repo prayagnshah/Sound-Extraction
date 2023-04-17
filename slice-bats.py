@@ -5,44 +5,46 @@ import soundfile as sf
 
 def process_audio_files(directory, chunk_duration, output_directory):
 
-    # Get all the files in the directory
+    # Traversing the directories and files in the directory
 
-    list_files = os.listdir(directory)
+    for root, dirs, files in os.walk(directory):
 
-    # Loop through the files
-    for file in list_files:
-        file_str = os.path.splitext(file)[0]
-        file_datetime = datetime.datetime.strptime(file_str, "%Y%m%d_%H%M%S")
+        # Looping the files of that directory
 
-        audio, sample_rate = sf.read(os.path.join(directory, file))
+        for file in files:
+            file_str = os.path.splitext(file)[0]
+            file_datetime = datetime.datetime.strptime(
+                file_str, "%Y%m%d_%H%M%S")
 
-        # total samples in the audio file
+            audio, sample_rate = sf.read(os.path.join(root, file))
 
-        total_samples = len(audio)
+            # total samples in the audio file
 
-        # samples in each chunk
+            total_samples = len(audio)
 
-        chunk_samples = int(chunk_duration * sample_rate)
+            # samples in each chunk
 
-        start = 0
+            chunk_samples = int(chunk_duration * sample_rate)
 
-        for i in range(0, total_samples, chunk_samples):
-            chunk = audio[i:i + chunk_samples]
+            start = 0
 
-            # Getting the start time of the audio file from the actual recordings and adding the chunk duration
+            for i in range(0, total_samples, chunk_samples):
+                chunk = audio[i:i + chunk_samples]
 
-            recording_time = (
-                file_datetime + datetime.timedelta(seconds=start)).strftime("%Y%m%dT%H%M%S")
+                # Getting the start time of the audio file from the actual recordings and adding the chunk duration
 
-            filename = os.path.join(
-                output_directory, "{}.wav".format(recording_time))
+                recording_time = (
+                    file_datetime + datetime.timedelta(seconds=start)).strftime("%Y%m%dT%H%M%S")
 
-            sf.write(filename, chunk, sample_rate)
+                filename = os.path.join(
+                    output_directory, "{}.wav".format(recording_time))
 
-            start += chunk_duration
+                sf.write(filename, chunk, sample_rate)
+
+                start += chunk_duration
 
 
-directory = "D:\\bats\\countryIsland\\SD1\\Data1"
+directory = "D:\\bats\\countryIsland\\SD1"
 output_directory = "C:\\Users\\ShahP\\Documents\\extract-audio-files\\extract"
 chunk_duration = 10
 
