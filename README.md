@@ -10,7 +10,7 @@ Extraction will work for both type of format of files (wav and flac).
 
 ## Setup (Windows)
 
-Download Sound-File Extraction: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
+Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
 
     python -m venv venv
     venv\Scripts\Activate
@@ -22,7 +22,7 @@ If creating virtual environment gives us an error then open the Powershell with 
 
 ## Setup (Linux)
 
-Download Sound-File Extraction: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
+Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
 
     python -m venv venv
     source venv/bin/activate
