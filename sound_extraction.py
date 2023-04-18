@@ -265,7 +265,6 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
 
 # Create an ArgumentParser object
-
 parser = argparse.ArgumentParser(
     description='A program that will help to extract recording from the actual long recordings.')
 
