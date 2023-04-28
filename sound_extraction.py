@@ -207,9 +207,18 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                 if current_key_index + 1 < len(recording_keys):
 
+                    # Checking the extension of the audio file and adding the seconds accordingly
+
+                    if args.extension == ".flac":
+                        seconds = 6
+                    elif args.extension == ".wav":
+                        seconds = 1
+                    else:
+                        pass
+
                     # According to the flac recorders, proper recording are not captured so using 3 mins 6 seconds to get 3 mins extraction
 
-                    duration_new = datetime.timedelta(minutes=args.duration, seconds=6)  # nopep8
+                    duration_new = datetime.timedelta(minutes=args.duration, seconds=seconds)  # nopep8
 
                     next_key = recording_keys[current_key_index + 1]
 
@@ -264,18 +273,59 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
     return export_segment, output_directory
 
 
+def process_audio_files(directory, slice_duration, output_directory):
+
+    # Traversing the directories and files in the directory
+
+    for root, dirs, files in os.walk(directory):
+
+        # Looping the files of that directory
+
+        for file in files:
+            file_str = os.path.splitext(file)[0]
+            file_datetime = datetime.datetime.strptime(
+                file_str, "%Y%m%dT%H%M%S")
+
+            audio, sample_rate = sf.read(os.path.join(root, file))
+
+            # total samples in the audio file
+
+            total_samples = len(audio)
+
+            # samples in each chunk
+
+            chunk_samples = int(slice_duration * sample_rate)
+
+            start = 0
+
+            for i in range(0, total_samples, chunk_samples):
+                chunk = audio[i:i + chunk_samples]
+
+                # Getting the start time of the audio file from the actual recordings and adding the chunk duration
+
+                recording_time = (
+                    file_datetime + datetime.timedelta(seconds=start)).strftime("%Y%m%dT%H%M%S")
+
+                filename = os.path.join(
+                    output_directory, "{}.wav".format(recording_time))
+
+                sf.write(filename, chunk, sample_rate)
+
+                start += slice_duration
+
+
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser(
     description='A program that will help to extract recording from the actual long recordings.')
 
 parser.add_argument('-r', '--root_directory', type=str, required=True, help='The root directory of the long recordings')  # nopep8
-parser.add_argument('-o', '--output_directory', type=str, required=True, help='The output directory to store the extracted audio segments')  # nopep8
-parser.add_argument('-c', '--csv_file_path', type=str, required=True, help='The path of the csv file')  # nopep8
-parser.add_argument('-d', '--duration', type=int, default=3, help='The duration of the audio segment in minutes')  # nopep8
-parser.add_argument('-s', '--site_name', type=str, required=True,  help='The name of the site')  # nopep8
+parser.add_argument('-o', '--output_directory', type=str, help='The output directory to store the extracted audio segments')  # nopep8
+parser.add_argument('-c', '--csv_file_path', type=str, help='The path of the csv file')  # nopep8
+parser.add_argument('-d', '--duration', type=int, default=3, help='What duration of extracted segments you want?')  # nopep8
+parser.add_argument('-s', '--site_name', type=str,  help='The name of the site')  # nopep8
 parser.add_argument('-span', '--span', action='store_true', help='Extract original files instead of spanning')  # nopep8
 parser.add_argument('-e', '--extension', type=str, choices=['.wav', '.flac'], default='.flac', help='The extension of the original audio files')  # nopep8
-
+parser.add_argument('-slice', '--slice', type=int, help='In how many seconds you want to slice the audio files?')  # nopep8
 # Parse the command line arguments
 
 args = parser.parse_args()
@@ -287,18 +337,28 @@ output_directory = args.output_directory
 site_name = args.site_name
 csv_file_path = args.csv_file_path
 
-# Calling the functions
+# If user uses slice to get divide audio files into same length then only function will be activated
 
-directory, all_files = get_directories(root_directory)
+if args.slice:
+    directory = root_directory
+    slice_duration = args.slice
+    process_audio_files(directory, slice_duration, output_directory)
 
-sampleFile = "sampleFile"
-sample_recordings = read_csv_file(csv_file_path, sampleFile)
+# If user wants to extract the audio files from sample time frame this statement will be executed
 
-filtered_recordings_dict = process_recordings(all_files, sample_recordings)
+else:
 
+    # Calling the functions
 
-export_segment, output_directory = extract_audio_segments(
-    filtered_recordings_dict, output_directory, site_name)
+    directory, all_files = get_directories(root_directory)
+
+    sampleFile = "sampleFile"
+    sample_recordings = read_csv_file(csv_file_path, sampleFile)
+
+    filtered_recordings_dict = process_recordings(all_files, sample_recordings)
+
+    export_segment, output_directory = extract_audio_segments(
+        filtered_recordings_dict, output_directory, site_name)
 
 
 # filename

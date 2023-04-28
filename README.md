@@ -40,7 +40,13 @@ Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3
 
     python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
 
-2.  Run sound_extraction.py to get the sliced audio files of BAT which can handle around 192K sample rate. Here is an example:
+Arguments and commands used are required to get the extraction of audio files according to the sample times.
+
+2.  Run sound_extraction.py to get the sliced audio files which can handle around 192K sample rate. Here is an example:
+
+    python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -slice 10
+
+Arguments and commands used are required to get the slicing of larger audio files into smaller audio files of your choice.
 
 Here's a complete list of all command line arguments:
 
@@ -48,9 +54,10 @@ Here's a complete list of all command line arguments:
     -o, Path to output folder (required). Need to make sure all the folder is created.
     -c, Path to csv file (required). CSV file where all the sample recordings names are stored and sample recording should have the column name "sampleFile".
     -s, Site name (required). Name of the site.
-    -d, Duration of the audio file for extraction (optional). You can change the duration of the extracted audio files. Default is 3 minutes.
+    -d, Duration of the extracted audio file  (optional). You can change the duration and can have whatever choice of extracted recordings. Default is 3 minutes.
     -span, Span of the audio file (optional). Extracted audio files will not span to 3 minutes if the original file is shorter.
     -e, Extension of the audio file (optional)(.wav or .flac). If your original audio files are flac then you need to use ".wav". Default is flac.
+    -slice, Slice the audio file (optional). If you want to slice the larger audio file into smaller audio files then you can use this argument.
 
 We can see the arguments list by using the following command:
 
