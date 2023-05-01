@@ -34,13 +34,13 @@ Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3
 
 1.  Run sound_extraction.py to get the extracted audio files. You need to set the working directory where the downloaded files are located. Here is an example:
 
-    python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
+    `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
 Arguments and commands used are required to get the extraction of audio files according to the sample times.
 
 2.  Run sound_extraction.py to get the sliced audio files which can handle around 192K sample rate. Here is an example:
 
-    python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -slice 10
+    `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -slice 10`
 
 Arguments and commands used are required to get the slicing of larger audio files into smaller audio files of your choice.
 
