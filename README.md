@@ -2,11 +2,7 @@
 
 ## About
 
-This is the tool to extract bird sounds from the long audios and slice the BAT recordings into smaller parts to make it compatible with the analysis workflow. Moreover, software like SonoBAT will be able to handle the recordings.
-
-Get your extracted audio files new dimension according to the sunrise, sunset, nocturnal, dusk, etc.
-
-Extraction will work for both type of format of files (wav and flac).
+Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
 
 ## Setup (Windows)
 
@@ -36,7 +32,7 @@ Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3
 
 ## Usage
 
-1.  Run sound_extraction.py to get the extracted audio files. You need to set the path where the downloaded files are there. Here is an example:
+1.  Run sound_extraction.py to get the extracted audio files. You need to set the working directory where the downloaded files are located. Here is an example:
 
     python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
 
@@ -50,14 +46,14 @@ Arguments and commands used are required to get the slicing of larger audio file
 
 Here's a complete list of all command line arguments:
 
-    -r, Path to original audio files (required). Need to make sure all the audio are stored in the folder.
-    -o, Path to output folder (required). Need to make sure all the folder is created.
-    -c, Path to csv file (required). CSV file where all the sample recordings names are stored and sample recording should have the column name "sampleFile".
-    -s, Site name (required). Name of the site.
-    -d, Duration of the extracted audio file  (optional). You can change the duration and can have whatever choice of extracted recordings. Default is 3 minutes.
-    -span, Span of the audio file (optional). Extracted audio files will not span to 3 minutes if the original file is shorter.
-    -e, Extension of the audio file (optional)(.wav or .flac). If your original audio files are flac then you need to use ".wav". Default is flac.
-    -slice, Slice the audio file (optional). If you want to slice the larger audio file into smaller audio files then you can use this argument.
+    -r, Path to original audio files (required). Need to make sure all the audio files are stored in a folder.
+    -o, Path to output folder (required). Make sure to create this folder before running the command.
+    -c, Path to your list of recordings to be extracted. This must be a CSV file where all the sample recording names to be extracted, stored in a column named "sampleFile".
+    -s, Prefix or the recording name, or ID, etc. This will be used to name the extracted audio files.
+    -d, Duration of the extracted audio file. Change the duration of the extracted audio files, if required. Default is 3 minutes.
+    -span, Span of the audio file. Extracted audio files will not span to 3 minutes if the original file is shorter.
+    -e, Extension of the audio file (.wav or .flac). If your original audio files are flac then you need to use ".wav". Default is flac.
+    -slice, Slice the audio file in smaller segments/chunks. Default is 10 seconds.
 
 We can see the arguments list by using the following command:
 
@@ -79,9 +75,14 @@ We can see the arguments list by using the following command:
 
 ## Issues
 
-1. If your recorders are taking time in creating a log file for every recording then spanning of files can give off times. For eg, if recorder is 1 hour long but and it takes 6 seconds to create a log file then original length of audio file will be 59 minutes and 54 seconds. If the sample file falls near the end of the original recording then extraction of audio might be 2 mins 54 seconds. In this scenario, you need to adjust the `seconds` on `line 212` in file `sound_extraction.py`
+1. If your recorders are taking time in creating a log file for every recording then spanning of files can give off times. For eg, if recorder is 1 hour long but it takes 6 seconds to create a log file then original length of audio file will be 59 minutes and 54 seconds. Furthermore, if the sample file falls near the end of the original recording then extraction of audio might be 2 mins 54 seconds. In this scenario, you need to adjust the `seconds` on `line 213` or `line 215` depending on the type of audio and this changes should be made in file `sound_extraction.py`.
 
-   `duration_new = datetime.timedelta(minutes=args.duration, seconds=6)`
+   ```
+   if args.extension == ".flac":
+       seconds = 6
+   elif args.extension == ".wav":
+       seconds = 1
+   ```
 
 2. If you are using `wav` files then you will need to do the same as above.
 
@@ -89,4 +90,4 @@ We can see the arguments list by using the following command:
 
 1. Make code more robust that if there are unused files in the directory then also code keeps on running and does not stop.
 
-2. Want to make sure that if we use increment of 3 minutes then it should not span to less than 3 minutes or greater than 3 minutes.
+2. Want to make sure that if we use increment of 3 minutes then it should give us exactly 3 minutes of audio file instead of adding 6 seconds or 1 seconds in the code.
