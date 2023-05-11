@@ -47,7 +47,7 @@ Arguments and commands used are required to get the slicing of larger audio file
 Here's a complete list of all command line arguments:
 
     -r, Path to original audio files (required). Need to make sure all the audio files are stored in a folder.
-    -o, Path to output folder (required). Make sure to create this folder before running the command.
+    -o, Path to output folder (required). Program will create a folder for you with current time, name of site and extraction of duration to the specified path.
     -c, Path to your list of recordings to be extracted. This must be a CSV file where all the sample recording names to be extracted, stored in a column named "sampleFile".
     -s, Prefix or the recording name, or ID, etc. This will be used to name the extracted audio files.
     -d, Duration of the extracted audio file. Change the duration of the extracted audio files, if required. Default is 3 minutes.
@@ -71,8 +71,6 @@ We can see the arguments list by using the following command:
 
 2. Original files should be in the format `20220611T202300.wav` or `20220611T202300.flac`. Sample files in CSV should be in the format `20220611_202300.wav` or `20220611_202300.flac`.
 
-3. Need to make sure directories do not have any other files except the original audio files.
-
 ## Issues
 
 1. If your recorders are taking time in creating a log file for every recording then spanning of files can give off times. For eg, if recorder is 1 hour long but it takes 6 seconds to create a log file then original length of audio file will be 59 minutes and 54 seconds. Furthermore, if the sample file falls near the end of the original recording then extraction of audio might be 2 mins 54 seconds. In this scenario, you need to adjust the `seconds` on `line 213` or `line 215` depending on the type of audio and this changes should be made in file `sound_extraction.py`.
@@ -88,6 +86,4 @@ We can see the arguments list by using the following command:
 
 ## Future Plans
 
-1. Make code more robust that if there are unused files in the directory then also code keeps on running and does not stop.
-
-2. Want to make sure that if we use increment of 3 minutes then it should give us exactly 3 minutes of audio file instead of adding 6 seconds or 1 seconds in the code.
+1. Want to make sure that if we use increment of 3 minutes then it should give us exactly 3 minutes of audio file instead of adding 6 seconds or 1 seconds in the code.
