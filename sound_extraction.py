@@ -9,6 +9,7 @@ import argparse
 def get_directories(root_directory):
     """
     Gets all directories in the root directory and loops through them.
+    It will only accept the file which are in the .wav or .flac format.
     """
     all_files = []
     directory = []
@@ -19,11 +20,10 @@ def get_directories(root_directory):
             directory_in = os.path.join(root, directory_path)
             directory.append(directory_in)
 
-            all_files_in = os.listdir(directory_in)
+            for file in os.listdir(directory_in):
+                if file.endswith(args.extension):
+                    all_files.append(file)
 
-            all_files += all_files_in
-
-    # print(directory)
     return directory, all_files
 
 
