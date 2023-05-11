@@ -133,7 +133,27 @@ def process_recordings(all_files, sample_recordings):
     return filtered_recordings_dict
 
 
+def generate_subdir_name():
+    """
+    Function to generate a subdirectory name for the output files.
+    For slice mode, the subdirectory name will be the timestamp and slice number.
+    """
+    timestamp = datetime.datetime.now().strftime("%Y%m%d")
+
+    if args.slice:
+        return f"{timestamp}_{args.slice}seconds"
+    else:
+        return f"{timestamp}_{args.site_name}_{args.duration}min"
+
+
 def extract_audio_segments(filtered_recordings_dict, output_directory, site_name):
+
+    # Generating the subdirectory name
+    subdir_name = generate_subdir_name()
+
+    # Creating the subdirectory
+    output_subdirectory = os.path.join(output_directory, subdir_name)
+    os.makedirs(output_subdirectory, exist_ok=True)
 
     # Set the duration for the portion of the audio file to extract
 
@@ -267,13 +287,20 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                 # Writing the new audio of 3 mins to the desired directory
 
-                export_segment = sf.write(os.path.join(output_directory, site_name + output_filename),
+                export_segment = sf.write(os.path.join(output_subdirectory, site_name + output_filename),
                                           snippet_data, samplerate)
 
-    return export_segment, output_directory
+    return export_segment, output_subdirectory
 
 
 def process_audio_files(directory, slice_duration, output_directory):
+
+    # Generating the subdirectory name
+    subdir_name = generate_subdir_name()
+
+    # Creating the subdirectory
+    output_subdirectory = os.path.join(output_directory, subdir_name)
+    os.makedirs(output_subdirectory, exist_ok=True)
 
     # Traversing the directories and files in the directory
 
@@ -307,7 +334,7 @@ def process_audio_files(directory, slice_duration, output_directory):
                     file_datetime + datetime.timedelta(seconds=start)).strftime("%Y%m%dT%H%M%S")
 
                 filename = os.path.join(
-                    output_directory, "{}.wav".format(recording_time))
+                    output_subdirectory, "{}.wav".format(recording_time))
 
                 sf.write(filename, chunk, sample_rate)
 
