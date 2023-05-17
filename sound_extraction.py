@@ -74,11 +74,9 @@ def process_recordings(all_files, sample_recordings):
 
         # Get the start and end datetime of the long recording
         # Putting try and except handling because there will be backup file with .flac and we need to avoid it
-        try:
-            long_start_datetime = datetime.datetime.strptime(
-                filename, "%Y%m%dT%H%M%S")
-        except ValueError:
-            continue
+
+        long_start_datetime = datetime.datetime.strptime(
+            filename, "%Y%m%dT%H%M%S")
 
         # Getting the duration of the recording by checking the next long recording's start time and if there is one then,
 
