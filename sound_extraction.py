@@ -4,25 +4,35 @@ import csv
 import soundfile as sf
 import numpy as np
 import argparse
+import logging
+
+# Creating the log format
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)  # nopep8
 
 
 def get_directories(root_directory):
     """
-    Gets all directories in the root directory and loops through them.
-    It will only accept the file which are in the .wav or .flac format.
+    Getting the directories and files from the root directory
+    logging messages if no files or no extension files are found
     """
     all_files = []
     directory = []
 
     for root, dirs, files in os.walk(root_directory):
-        for directory_path in dirs:
 
-            directory_in = os.path.join(root, directory_path)
-            directory.append(directory_in)
+        ext_found = False
 
-            for file in os.listdir(directory_in):
-                if file.endswith(args.extension):
-                    all_files.append(file)
+        for file in files:
+            if file.endswith(args.extension):
+                all_files.append(file)
+                ext_found = True
+            else:
+                logging.info(f"File {file} is not a {args.extension} file")
+
+        if ext_found:
+            directory.append(root)
+        else:
+            logging.info(f"No {args.extension} files found in {root}")
 
     return directory, all_files
 
@@ -52,7 +62,6 @@ def read_csv_file(csv_file_path, sampleFile):
     # Filtering the sample recordings
 
     sample_recordings = [row[sampleFile_index] for row in rows]
-    # print(sample_recordings)
 
     return sample_recordings
 
@@ -105,7 +114,6 @@ def process_recordings(all_files, sample_recordings):
         # Finally producing the output: sample_recording
 
         for sample_recording in sample_recordings:
-            # print(sample_recording)
 
             file, ext = os.path.splitext(sample_recording)
 
@@ -184,7 +192,7 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
                 audio_file, samplerate = sf.read(os.path.join(directory, key))
 
             except Exception as e:
-                print(f"Error reading audio file {key}: {e}")
+                logging.error(f"Error reading audio file {key}: {e}")
                 continue
 
             # Splitting the key values into datetime
@@ -199,7 +207,6 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
             for snippet in value:
                 start_time_str = os.path.splitext(snippet)[0]
-                # print(start_time_str)
 
                 # Extract the start and end time for the snippet and parsing string as datetime object
 
@@ -225,18 +232,9 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                 if current_key_index + 1 < len(recording_keys):
 
-                    # Checking the extension of the audio file and adding the seconds accordingly
+                    # Setting the duration of the snippet
 
-                    if args.extension == ".flac":
-                        seconds = 6
-                    elif args.extension == ".wav":
-                        seconds = 1
-                    else:
-                        pass
-
-                    # According to the flac recorders, proper recording are not captured so using 3 mins 6 seconds to get 3 mins extraction
-
-                    duration_new = datetime.timedelta(minutes=args.duration, seconds=seconds)  # nopep8
+                    duration_new = datetime.timedelta(minutes=args.duration)  # nopep8
 
                     next_key = recording_keys[current_key_index + 1]
 
@@ -244,9 +242,12 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
                         os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
 
                     # Checking if the duration of the snippet is greater than the next key's start time and flag "-span" is used then it won't concatenate the audio files
+                    # It will calculate the exact duration of the files and then it will concatenate
 
                     if not args.span and start_time + duration_new > next_key_start_time:
-                        time_duration = next_key_start_time - start_time
+                        parent_duration_time = len(audio_file) / samplerate
+                        time_duration_second = parent_duration_time - snippet_start_time.total_seconds()  # nopep8
+                        time_duration = datetime.timedelta(seconds=time_duration_second)  # nopep8
 
                         # Loading the next audio file
 
@@ -260,7 +261,7 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
                         # Getting the remaining audio from the next audio file
 
                         remaining_audio = next_audio_file[:int(
-                            remaining_duration.total_seconds() * next_samplerate)]
+                            remaining_duration.total_seconds() * next_samplerate) + 1]
 
                         # Concatenating the audio files
 
