@@ -31,8 +31,6 @@ def get_directories(root_directory):
 
         if ext_found:
             directory.append(root)
-        else:
-            logging.info(f"No {args.extension} files found in {root}")
 
     return directory, all_files
 
