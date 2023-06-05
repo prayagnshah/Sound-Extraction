@@ -36,7 +36,7 @@ Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3
 
     `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
-Arguments and commands used are required to get the extraction of audio files according to the sample times.
+Arguments and commands used are required to get the extraction of audio files according to the sample times. After entering the argument users will be asked to enter the custom `sub-directory name`to store the extracted audio files. If you don't want to enter the custom name then just press `Enter` and it will extract the audio files in the same output directory mentioned in the argument.
 
 2.  Run sound_extraction.py to get the sliced audio files which can handle around 192K sample rate. Here is an example:
 
@@ -59,13 +59,15 @@ We can see the arguments list by using the following command:
 
     python sound_extraction.py -h
 
-2. This is very basic version of the analysis of the workflow, you can adjust it to your needs.
+2. Log file will be created in the output folder with the name of `sound_extraction_logs.txt` which will show all the corrupted files which happened during the extraction process.
 
-3. All the unusual files are handled and will show in console as a log message.
+3. This is very basic version of the analysis of the workflow, you can adjust it to your needs.
 
-4. Please open an issue if you have any questions or suggestions to add any features.
+4. All the unusual files are handled and will show in console as a log message.
 
-5. I will keep on updating the code and making it more efficient.
+5. Please open an issue if you have any questions or suggestions to add any features.
+
+6. I will keep on updating the code and making it more efficient.
 
 ## Important Notes
 
