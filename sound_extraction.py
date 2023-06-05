@@ -139,12 +139,9 @@ def generate_subdir_name():
     Function to generate a subdirectory name for the output files.
     For slice mode, the subdirectory name will be the timestamp and slice number.
     """
-    timestamp = datetime.datetime.now().strftime("%Y%m%d")
+    user_input = input("Enter the subdirectory name: ")
 
-    if args.slice:
-        return f"{timestamp}_{args.slice}seconds"
-    else:
-        return f"{timestamp}_{args.site_name}_{args.duration}min"
+    return f"{user_input}"
 
 
 def extract_audio_segments(filtered_recordings_dict, output_directory, site_name):
