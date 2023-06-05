@@ -6,9 +6,6 @@ import numpy as np
 import argparse
 import logging
 
-# Creating the log format
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)  # nopep8
-
 
 def get_directories(root_directory):
     """
@@ -360,6 +357,15 @@ root_directory = args.root_directory
 output_directory = args.output_directory
 site_name = args.site_name
 csv_file_path = args.csv_file_path
+
+# Create the log file name using the output directory
+
+log_file = os.path.join(output_directory, "sound_extraction_logs.txt")
+log_format = '%(asctime)s - %(levelname)s - %(message)s'
+
+# Creating the log format
+
+logging.basicConfig(format=log_format, level=logging.INFO, filename=log_file)  # nopep8
 
 # If user uses slice to get divide audio files into same length then only function will be activated
 
