@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 import datetime
 import csv
@@ -5,6 +6,22 @@ import soundfile as sf
 import numpy as np
 import argparse
 import logging
+import sentry_sdk
+
+
+# Load environment variables
+load_dotenv()
+
+# Get the sentry DSN from the environment variables
+sentry_dsn = os.getenv("sentry_dsn")
+
+sentry_sdk.init(
+    dsn=sentry_dsn,
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0
+)
 
 
 def get_directories(root_directory):
@@ -230,8 +247,15 @@ def extract_audio_segments(filtered_recordings_dict, output_directory, site_name
 
                     next_key = recording_keys[current_key_index + 1]
 
-                    next_key_start_time = datetime.datetime.strptime(
-                        os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
+                    # Adding error handling for the next key if it is corrupted
+
+                    try:
+                        next_key_start_time = datetime.datetime.strptime(
+                            os.path.splitext(next_key)[0], "%Y%m%dT%H%M%S")
+                    except ValueError:
+                        logging.error(
+                            f"Error parsing next key {next_key} for snippet {snippet}")
+                        continue
 
                     # Checking if the duration of the snippet is greater than the next key's start time and flag "-span" is used then it won't concatenate the audio files
                     # It will calculate the exact duration of the files and then it will concatenate
