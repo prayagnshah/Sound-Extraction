@@ -71,7 +71,7 @@ We can see the arguments list by using the following command:
 
 1. Log file will be created in the output folder with the name of `sound_extraction_logs.txt` which will show all the corrupted files which happened during the extraction process.
 
-2. This program will send the error message to the Sentry server to improve the user performace and to keep track of the errors.
+2. This program will send the error message to the Sentry server to improve the user performace and to keep track of the errors which will be handled by myself.
 
 ## Important Notes
 
