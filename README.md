@@ -59,8 +59,6 @@ We can see the arguments list by using the following command:
 
     python sound_extraction.py -h
 
-2. Log file will be created in the output folder with the name of `sound_extraction_logs.txt` which will show all the corrupted files which happened during the extraction process.
-
 3. This is very basic version of the analysis of the workflow, you can adjust it to your needs.
 
 4. All the unusual files are handled and will show in console as a log message.
@@ -68,6 +66,12 @@ We can see the arguments list by using the following command:
 5. Please open an issue if you have any questions or suggestions to add any features.
 
 6. I will keep on updating the code and making it more efficient.
+
+## Error Handling
+
+1. Log file will be created in the output folder with the name of `sound_extraction_logs.txt` which will show all the corrupted files which happened during the extraction process.
+
+2. This program will send the error message to the Sentry server to improve the user performace and to keep track of the errors.
 
 ## Important Notes
 
