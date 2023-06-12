@@ -24,6 +24,14 @@ Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.goog
     source venv/bin/activate
     pip install -r requirements.txt
 
+## Downloading the package from PyPI
+
+    pip install sound-extraction==1.0.1
+
+After downloading the package from PyPI, you can use the following command to run the program:
+
+    sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
+
 ## Test Files Usage
 
 Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3kRuLkFw_2eUovGU2d8L/view?usp=share_link)
