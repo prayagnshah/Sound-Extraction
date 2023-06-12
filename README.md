@@ -4,6 +4,18 @@
 
 Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
 
+## Downloading the package from PyPI
+
+    pip install sound-extraction==1.0.1
+
+After downloading the package from PyPI, you can use the following command to run the program:
+
+    sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
+
+Users can follow the same arguments and commands mentioned below to run the program. [Here](#usage)
+
+- If you want to run the program from the source files then follow the steps below:
+
 ## Setup (Windows)
 
 Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
@@ -23,14 +35,6 @@ Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.goog
     python -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
-
-## Downloading the package from PyPI
-
-    pip install sound-extraction==1.0.1
-
-After downloading the package from PyPI, you can use the following command to run the program:
-
-    sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
 
 ## Test Files Usage
 
@@ -86,3 +90,7 @@ We can see the arguments list by using the following command:
 1. Try to have your original audio files in subfolder of root directory and once you provide path of root folder then code will search for all the files in all subfolders as well as in root folder.
 
 2. Original files should be in the format `20220611T202300.wav` or `20220611T202300.flac`. Sample files in CSV should be in the format `20220611_202300.wav` or `20220611_202300.flac`.
+
+## Changelog
+
+1. All the version changes are mentioned in the [CHANGELOG.md](https://github.com/prayagnshah/Sound-Extraction/blob/main/CHANGELOG.md) file.
