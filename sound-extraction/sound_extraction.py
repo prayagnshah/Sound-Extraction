@@ -399,7 +399,7 @@ def main():
 
     parser.add_argument('-r', '--root_directory', type=str, required=True, help='The root directory of the long recordings')  
     parser.add_argument('-o', '--output_directory', type=str, help='The output directory to store the extracted audio segments')  
-    parser.add_argument('-c', '--csv_file_path', type=str, help='The path of the csv file') 
+    parser.add_argument('-c', '--csv_file_path', type=str, help='Path to the CSV file with the following requirements: Header should include "sample file" and "categories" columns. The "sample file" column should be in the format 20220608_170343, and the "categories" column should contain categories such as "Nocturnal", etc.') 
     parser.add_argument('-d', '--duration', type=int, default=3, help='What duration of extracted segments you want?')  
     parser.add_argument('-s', '--site_name', type=str,  help='The name of the site')
     parser.add_argument('-span', '--span', action='store_true', help='Extract original files instead of spanning') 
