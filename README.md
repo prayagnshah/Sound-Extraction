@@ -60,7 +60,7 @@ Here's a complete list of all command line arguments:
 
     -r, Path to original audio files (required). Need to make sure all the audio files are stored in a folder.
     -o, Path to output folder (required). Program will create a folder for you with current time, name of site and extraction of duration to the specified path.
-    -c, Path to your list of recordings to be extracted. This must be a CSV file where all the sample recording names to be extracted, stored in a column named "sampleFile".
+    -c, Path to the CSV file with the following requirements: Header should include "sample file" and "categories" columns. The "sample file" column should be in the format 20220608_170343, and the "categories" column should contain categories such as "Nocturnal", etc.
     -s, Prefix or the recording name, or ID, etc. This will be used to name the extracted audio files.
     -d, Duration of the extracted audio file. Change the duration of the extracted audio files, if required. Default is 3 minutes.
     -span, Span of the audio file. Extracted audio files will not span to 3 minutes if the original file is shorter.
@@ -90,6 +90,7 @@ We can see the arguments list by using the following command:
 1. Try to have your original audio files in subfolder of root directory and once you provide path of root folder then code will search for all the files in all subfolders as well as in root folder.
 
 2. Original files should be in the format `20220611T202300.wav` or `20220611T202300.flac`. Sample files in CSV should be in the format `20220611_202300.wav` or `20220611_202300.flac` under the heading `sampleFile`. For instance,
+
    ![Sample Image](data/image.png)
 
 ## Changelog
