@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2023-06-15
+
+### Added
+
+- Functionality added to store the extracted recordings in the specific time folders. For instance, Nocturnal, Daytime, etc.
+- Functionality added to download the package from pip and run it from the command line.
+
+### Changed
+
+- Changed the argument description for CSV file in the `README.md` file.
+
+[unreleased]:
+
+- Need to create Dockerfile
+
 ## [1.0.1] - 2023-06-12
 
 ### Added
