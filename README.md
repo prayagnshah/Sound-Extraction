@@ -4,17 +4,19 @@
 
 Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
 
-## Downloading the package from PyPI
+## Types of Installation
 
-    pip install sound-extraction==1.0.1
+1. Download the python package:
+    
+    `pip install sound-extraction`
 
-After downloading the package from PyPI, you can use the following command to run the program:
+    a. After the installation you can use the following command to run the program:
 
-    sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
+    `sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
-Users can follow the same arguments and commands mentioned below to run the program. [Here](#usage)
+and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#Arguments)
 
-- If you want to run the program from the source files then follow the steps below:
+2. If you want to run the program from the source files then follow the steps below: [Source-File](#setup)
 
 ## Setup (Windows)
 
@@ -56,6 +58,8 @@ Arguments and commands used are required to get the extraction of audio files ac
 
 Arguments and commands used are required to get the slicing of larger audio files into smaller audio files of your choice.
 
+## Arguments
+
 Here's a complete list of all command line arguments:
 
     -r, Path to original audio files (required). Need to make sure all the audio files are stored in a folder.
@@ -71,13 +75,13 @@ We can see the arguments list by using the following command:
 
     python sound_extraction.py -h
 
-3. This is very basic version of the analysis of the workflow, you can adjust it to your needs.
+1. This is very basic version of the analysis of the workflow, you can adjust it to your needs.
 
-4. All the unusual files are handled and will show in console as a log message.
+2. All the unusual files are handled and will show in console as a log message.
 
-5. Please open an issue if you have any questions or suggestions to add any features.
+3. Please open an issue if you have any questions or suggestions to add any features.
 
-6. I will keep on updating the code and making it more efficient.
+4. I will keep on updating the code and making it more efficient.
 
 ## Error Handling
 
