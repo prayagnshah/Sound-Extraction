@@ -1,23 +1,26 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
-    name='sound-extraction',
-    version='1.0.1',
-    packages=find_packages(),
+    name="sound-extraction",
+    version="1.1.1",
+    packages=["src"],
     install_requires=[
-        'certifi==2023.5.7',
-        'cffi==1.15.1',
-        'load-dotenv==0.1.0',
-        'numpy==1.24.3',
-        'pycparser==2.21',
-        'python-dotenv==1.0.0',
-        'sentry-sdk==1.25.1',
-        'soundfile==0.12.1',
-        'urllib3==2.0.3',
+        "certifi==2023.5.7",
+        "cffi==1.15.1",
+        "load-dotenv==0.1.0",
+        "numpy==1.24.3",
+        "pycparser==2.21",
+        "python-dotenv==1.0.0",
+        "sentry-sdk==1.25.1",
+        "soundfile==0.12.1",
+        "urllib3==2.0.3",
     ],
     entry_points={
-        'console_scripts': [
-            'sound-extraction = sound_extraction:main',
+        "console_scripts": [
+            "sound-extraction = src.sound_extraction:main",
         ],
     },
     classifiers=[
@@ -27,10 +30,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={'': 'sound-extraction'},
-    description="Slice and segment your audio files easily with open source Python program. Our tool enables you to perform analytical workflows by creating segments based on recording start time and desired duration. Share and manipulate the recordings at ease.Slice and segment your audio files easily with open source Python program. Our tool enables you to perform analytical workflows by creating segments based on recording start time and desired duration. Share and manipulate the recordings at ease.",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Prayag Shah",
     author_email="prayagshah07@gmail.com",
     url="https://github.com/prayagnshah/Sound-Extraction",
-
 )
