@@ -10,17 +10,32 @@ Use this tool to segment (i.e., clip or slice), copy, and extract short-duration
     
     `pip install sound-extraction`
 
-    a. After the installation you can use the following command to run the program:
+    a. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
 
     `sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
-and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#Arguments)
+and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#Arguments) OR
 
-2. If you want to run the program from the source files then follow the steps below: [Source-File](#setup)
+2. If you want to run the program thorugh Docker then follow the steps below: [Docker](#using-dockerfile) OR
+
+3. If you want to run the program from the source files then follow the steps below: [Source-File](#setup).
+
+<b>Note: You can use any one of the installation above to run the program.</b>
+
+## Using Dockerfile
+
+1. Download the Docker application: [Docker](https://www.docker.com/products/docker-desktop).
+
+2. Download `Dockerfile` and `requirements.txt` files: [Docker-File](https://github.com/prayagnshah/Sound-Extraction/blob/main/Dockerfile) and [Requirements](https://github.com/prayagnshah/Sound-Extraction/blob/main/requirements.txt).
+
+3. Open the terminal and go to the directory where you have downloaded the `Dockerfile` and `requirements.txt` files. Run the following command:
+
+    `docker build -t sound-extraction .`
+    `docker run sound-extraction`
 
 ## Setup (Windows)
 
-Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
+Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com/prayagnshah/Sound-Extraction/archive/refs/tags/v1.1.1.zip)
 
     python -m venv venv
     venv\Scripts\Activate
@@ -32,7 +47,7 @@ If creating virtual environment gives us an error then open the Powershell with 
 
 ## Setup (Linux)
 
-Download Audio-File Extraction Files: [Sound-File Extraction](https://drive.google.com/file/d/1HX9Cz0I7uKsIPuhHCdB1lfCmbtFY_YxJ/view?usp=share_link)
+Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com/prayagnshah/Sound-Extraction/archive/refs/tags/v1.1.1.zip)
 
     python -m venv venv
     source venv/bin/activate
