@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sound-extraction",
-    version="1.1.1",
+    version="1.1.2",
     packages=["src"],
     install_requires=[
         "certifi==2023.5.7",
