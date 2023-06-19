@@ -63,7 +63,9 @@ def main():
 
             categories_bool = False
             if categories_col not in header:
-                logging.info("Categories column not found in CSV file")
+                logging.info(
+                    "Categories column not found in CSV file, so there is no folder named Nocturnal, Daytime, etc."
+                )
 
                 categories_bool = True
 
@@ -442,7 +444,7 @@ def main():
         directory, all_files = get_directories(root_directory)
 
         sampleFile = "sampleFile"
-        categories_col = "Categories"
+        categories_col = "category"
         sample_recordings, categories_dict = read_csv_file(
             csv_file_path, sampleFile, categories_col
         )
