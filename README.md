@@ -79,7 +79,7 @@ Here's a complete list of all command line arguments:
 
     -r, Path to original audio files (required). Need to make sure all the audio files are stored in a folder.
     -o, Path to output folder (required). Program will create a folder for you with current time, name of site and extraction of duration to the specified path.
-    -c, Path to the CSV file with the following requirements: Header should include "sample file" and "categories" columns. The "sample file" column should be in the format 20220608_170343, and the "categories" column should contain categories such as "Nocturnal", etc.
+    -c, Path to the CSV file with the following requirements: Header should include "sample file" and "category" columns. The "sample file" column should be in the format 20220608_170343, and the "category" column should contain categories such as "Nocturnal", etc.
     -s, Prefix or the recording name, or ID, etc. This will be used to name the extracted audio files.
     -d, Duration of the extracted audio file. Change the duration of the extracted audio files, if required. Default is 3 minutes.
     -span, Span of the audio file. Extracted audio files will not span to 3 minutes if the original file is shorter.
