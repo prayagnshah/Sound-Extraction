@@ -4,7 +4,7 @@
 
 Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
 
-## Types of Installation
+## Types of Installation and you only have to use *one* of them
 
 1. Download the python package:
     
@@ -26,12 +26,18 @@ and then you can follow the instructions for the arguments mentioned below to ru
 
 1. Download the Docker application: [Docker](https://www.docker.com/products/docker-desktop).
 
-2. Download `Dockerfile` and `requirements.txt` files: [Docker-File](https://github.com/prayagnshah/Sound-Extraction/blob/main/Dockerfile) and [Requirements](https://github.com/prayagnshah/Sound-Extraction/blob/main/requirements.txt).
+2. Open the terminal and make sure docker package is installed on your system. If not then run the following two commands:
 
-3. Open the terminal and go to the directory where you have downloaded the `Dockerfile` and `requirements.txt` files. Run the following command:
+    `pip install docker`
+    `docker pull prayagshah/sound-extraction`
 
-    `docker build -t sound-extraction .`
+3. Once the docker is installed and the package is pulled then run the following command to run the program:
+
     `docker run sound-extraction`
+
+4. After running the above command you will be asked to enter the arguments. Follow the instructions below to enter the arguments:
+
+    `docker run prayagshah/sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
 ## Setup (Windows)
 
