@@ -14,11 +14,11 @@ Use this tool to segment (i.e., clip or slice), copy, and extract short-duration
 
     `sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
-and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#Arguments) OR
+and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#arguments) OR
 
 2. If you want to run the program thorugh Docker then follow the steps below: [Docker](#using-dockerfile) OR
 
-3. If you want to run the program from the source files then follow the steps below: [Source-File](#setup).
+3. If you want to run the program from the source files then follow the steps below: [Source-File](#setup-windows).
 
 <b>Note: You can use any one of the installation above to run the program.</b>
 
