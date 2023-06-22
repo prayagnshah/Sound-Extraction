@@ -3,10 +3,11 @@ from datetime import datetime, timedelta
 from suncalc import get_times
 from astral import LocationInfo
 from astral.sun import sun
+import pytz
 
 # Mentioning the start and end date
-start_date = pd.to_datetime("2021-07-05", utc=True)
-end_date = pd.to_datetime("2021-07-31", utc=True)
+start_date = pd.to_datetime("2021-07-05")
+end_date = pd.to_datetime("2021-10-31")
 
 # coords = pd.read_csv("GPS_log.csv", skiprows=1)
 latitude = 44.72
@@ -14,7 +15,7 @@ longitude = -62.80
 
 # Create an empty list to store the results of the sunset times
 result = []
-date_range = pd.date_range(start_date, end_date, freq="D", tz="UTC")
+date_range = pd.date_range(start_date, end_date, freq="D", tz="America/Halifax")
 
 # Loop through the dates and get the sunrise and sunset times
 for date in date_range:
@@ -141,31 +142,37 @@ combined_df = pd.concat(final_result, ignore_index=True)
 # Calculate Julian day
 combined_df["JDay"] = pd.DatetimeIndex(combined_df["date_time"]).dayofyear
 
-
+# Reading the selected columns
 combined_df = combined_df[["Filename", "Site", "date_time", "NewDate", "JDay"]]
 
-
-# Calling a function to create a list of datetimes
-datetime_range(start_date, end_date, timedelta(seconds=3600))
-
-data = pd.read_csv("sample-data.csv")
-df = pd.DataFrame(data)
-
-df["NewDate"] = pd.to_datetime(df["NewDate"], format="%Y%m%d_%H%M%S")
+combined_df["NewDate"] = pd.to_datetime(combined_df["NewDate"], format="%Y%m%d_%H%M%S")
 
 # Calculate sunrise and sunset times
 location = LocationInfo(latitude=latitude, longitude=longitude)
-df["sunrise"] = df["NewDate"].apply(
-    lambda x: sun(location.observer, date=x.date())["sunrise"]
+sunrise_times = []
+sunset_times = []
+
+for date in combined_df["NewDate"]:
+    sunrise_time = sun(location.observer, date=date.date())["sunrise"]
+    sunset_time = sun(location.observer, date=date.date())["sunset"]
+    sunrise_times.append(sunrise_time)
+    sunset_times.append(sunset_time)
+
+
+# Converting to the tz-naive datetime to make it consistent with NewDate timestamps
+combined_df["sunrise"] = (
+    pd.Series(sunrise_times).dt.tz_convert(pytz.UTC).dt.tz_localize(None)
 )
-df["sunset"] = df["NewDate"].apply(
-    lambda x: sun(location.observer, date=x.date())["sunset"]
+combined_df["sunset"] = (
+    pd.Series(sunset_times).dt.tz_convert(pytz.UTC).dt.tz_localize(None)
 )
 
-early_start = pd.Timestamp("2021-07-05")
-early_end = pd.Timestamp("2021-07-20")
-late_start = pd.Timestamp("2021-07-25")
-late_end = pd.Timestamp("2021-07-31")
+
+# Define early and late season dates
+early_start = pd.Timestamp("2022-06-01")
+early_end = pd.Timestamp("2022-06-16")
+late_start = pd.Timestamp("2021-07-05")
+late_end = pd.Timestamp("2021-08-31")
 
 
 # Define time categories based on conditions
@@ -178,34 +185,34 @@ def assign_time_category(row):
         if current_time >= sunrise - timedelta(
             seconds=3900
         ) and current_time <= sunrise + timedelta(seconds=2940):
-            return "Early Deployment - Early AM"
+            return "EE"
         elif current_time > sunrise + timedelta(
             seconds=3000
         ) and current_time <= sunrise + timedelta(seconds=9000):
-            return "Early Deployment - Mid AM"
+            return "EM"
         elif current_time > sunrise + timedelta(
             seconds=9036
         ) and current_time <= sunrise + timedelta(seconds=18000):
-            return "Early Deployment - Late AM"
+            return "EL"
     elif late_start <= current_time <= late_end:
         if current_time >= sunrise - timedelta(
             seconds=3900
         ) and current_time <= sunrise + timedelta(seconds=2940):
-            return "Late Deployment - Early AM"
+            return "LE"
         elif current_time > sunrise + timedelta(
             seconds=3000
         ) and current_time <= sunrise + timedelta(seconds=9000):
-            return "Late Deployment - Mid AM"
+            return "LM"
         elif current_time > sunrise + timedelta(
             seconds=9036
         ) and current_time <= sunrise + timedelta(seconds=18000):
-            return "Late Deployment - Late AM"
+            return "LL"
     else:
         if current_time >= sunset - timedelta(
             seconds=4200
         ) and current_time <= sunset + timedelta(seconds=600):
             return "Dusk"
-        elif current_time >= sunset - timedelta(
+        elif current_time >= sunset + timedelta(
             seconds=19800
         ) and current_time < sunset - timedelta(seconds=4500):
             return "Daytime"
@@ -214,13 +221,20 @@ def assign_time_category(row):
 
 
 # Assign time categories to each row
-df["TimeCategory"] = df.apply(assign_time_category, axis=1)
+combined_df["TimeCategory"] = combined_df.apply(assign_time_category, axis=1)
 
 # Get random samples for each category
-sample_size = 1  # Change this value to the desired number of samples per category
-random_samples = df.groupby("TimeCategory").apply(lambda x: x.sample(sample_size))
+sample_size = 25  # Change this value to the desired number of samples per category
+random_samples = combined_df.groupby("TimeCategory").apply(
+    lambda x: x.sample(sample_size)
+)
 
 # Reset index
 random_samples.reset_index(drop=True, inplace=True)
-
 print(random_samples)
+
+# random_samples.to_csv("random_samples.csv", index=False)
+
+
+# Calling a function to create a list of datetimes
+datetime_range(start_date, end_date, timedelta(seconds=3600))
