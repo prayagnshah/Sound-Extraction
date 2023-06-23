@@ -62,12 +62,7 @@ for date in date_range:
     )
 
 
-result_df = pd.DataFrame(result)
-
-# print(result_df)
-
-
-#
+# Function to create a list of datetimes
 def datetime_range(start, end, delta):
     current = start
     while current <= end:
@@ -139,11 +134,8 @@ for date, res in zip(date_range, result):
 
 combined_df = pd.concat(final_result, ignore_index=True)
 
-# Calculate Julian day
-combined_df["JDay"] = pd.DatetimeIndex(combined_df["date_time"]).dayofyear
-
 # Reading the selected columns
-combined_df = combined_df[["Filename", "Site", "date_time", "NewDate", "JDay"]]
+combined_df = combined_df[["Filename", "Site", "date_time", "NewDate"]]
 
 combined_df["NewDate"] = pd.to_datetime(combined_df["NewDate"], format="%Y%m%d_%H%M%S")
 
@@ -232,9 +224,3 @@ random_samples = combined_df.groupby("TimeCategory").apply(
 # Reset index
 random_samples.reset_index(drop=True, inplace=True)
 print(random_samples)
-
-# random_samples.to_csv("random_samples.csv", index=False)
-
-
-# Calling a function to create a list of datetimes
-datetime_range(start_date, end_date, timedelta(seconds=3600))
