@@ -7,7 +7,7 @@ import pytz
 
 # Mentioning the start and end date
 start_date = pd.to_datetime("2021-07-05")
-end_date = pd.to_datetime("2021-10-31")
+end_date = pd.to_datetime("2021-08-31")
 
 # coords = pd.read_csv("GPS_log.csv", skiprows=1)
 latitude = 44.72
@@ -161,10 +161,10 @@ combined_df["sunset"] = (
 
 
 # Define early and late season dates
-early_start = pd.Timestamp("2022-06-01")
-early_end = pd.Timestamp("2022-06-16")
-late_start = pd.Timestamp("2021-07-05")
-late_end = pd.Timestamp("2021-08-31")
+early_start = pd.Timestamp("2021-07-05")
+early_end = pd.Timestamp("2021-07-31")
+# late_start = pd.Timestamp("2021-07-05")
+# late_end = pd.Timestamp("2021-08-31")
 
 
 # Define time categories based on conditions
@@ -186,29 +186,30 @@ def assign_time_category(row):
             seconds=9036
         ) and current_time <= sunrise + timedelta(seconds=18000):
             return "EL"
-    elif late_start <= current_time <= late_end:
-        if current_time >= sunrise - timedelta(
-            seconds=3900
-        ) and current_time <= sunrise + timedelta(seconds=2940):
-            return "LE"
-        elif current_time > sunrise + timedelta(
-            seconds=3000
-        ) and current_time <= sunrise + timedelta(seconds=9000):
-            return "LM"
-        elif current_time > sunrise + timedelta(
-            seconds=9036
-        ) and current_time <= sunrise + timedelta(seconds=18000):
-            return "LL"
+
     else:
         if current_time >= sunset - timedelta(
             seconds=4200
         ) and current_time <= sunset + timedelta(seconds=600):
             return "Dusk"
-        elif current_time >= sunset + timedelta(
+        elif current_time >= sunrise + timedelta(
             seconds=19800
         ) and current_time < sunset - timedelta(seconds=4500):
             return "Daytime"
-        else:
+
+        elif (
+            # Check if current time is after sunset and before midnight
+            (
+                current_time >= sunset + timedelta(seconds=600)
+                and current_time <= sunset.replace(hour=23, minute=59, second=59)
+            )
+            or
+            # Check if current time is after midnight and before sunrise
+            (
+                current_time >= sunset.replace(hour=0, minute=0, second=0)
+                and current_time <= sunrise - timedelta(seconds=3910)
+            )
+        ):
             return "Nocturnal"
 
 
@@ -216,11 +217,12 @@ def assign_time_category(row):
 combined_df["TimeCategory"] = combined_df.apply(assign_time_category, axis=1)
 
 # Get random samples for each category
-sample_size = 25  # Change this value to the desired number of samples per category
+sample_size = 8  # Change this value to the desired number of samples per category
 random_samples = combined_df.groupby("TimeCategory").apply(
     lambda x: x.sample(sample_size)
 )
 
 # Reset index
 random_samples.reset_index(drop=True, inplace=True)
+# random_samples.to_csv("sample-data.csv", index=False)
 print(random_samples)
