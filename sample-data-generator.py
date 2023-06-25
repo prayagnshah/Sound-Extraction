@@ -5,20 +5,8 @@ from astral import LocationInfo
 from astral.sun import sun
 import pytz
 
-# Mentioning the start and end date
-start_date = pd.to_datetime("2021-07-05")
-end_date = pd.to_datetime("2021-08-31")
 
-# coords = pd.read_csv("GPS_log.csv", skiprows=1)
-latitude = 44.72
-longitude = -62.80
-
-# Create an empty list to store the results of the sunset times
-result = []
-date_range = pd.date_range(start_date, end_date, freq="D", tz="America/Halifax")
-
-# Loop through the dates and get the sunrise and sunset times
-for date in date_range:
+def calculate_sun_times(date, latitude, longitude):
     sun_times = get_times(date, latitude, longitude)
 
     boss_night_start = sun_times["sunrise"] - timedelta(seconds=18000)
@@ -42,24 +30,22 @@ for date in date_range:
     daytime_set_start = sun_times["sunset"] + timedelta(seconds=19800)
     daytime_set_end = sun_times["sunset"] - timedelta(seconds=3600)
 
-    result.append(
-        {
-            "boss_night_start": boss_night_start,
-            "boss_night_end": boss_night_end,
-            "boss_rise3a_start": boss_rise3a_start,
-            "boss_rise3a_end": boss_rise3a_end,
-            "boss_rise10_start": boss_rise10_start,
-            "boss_rise10_end": boss_rise10_end,
-            "boss_rise_3b_start": boss_rise_3b_start,
-            "boss_rise3b_end": boss_rise3b_end,
-            "boss_sunset_start": boss_sunset_start,
-            "boss_sunset_end": boss_sunset_end,
-            "boss_set_start": boss_set_start,
-            "boss_set_end": boss_set_end,
-            "daytime_set_start": daytime_set_start,
-            "daytime_set_end": daytime_set_end,
-        }
-    )
+    return {
+        "boss_night_start": boss_night_start,
+        "boss_night_end": boss_night_end,
+        "boss_rise3a_start": boss_rise3a_start,
+        "boss_rise3a_end": boss_rise3a_end,
+        "boss_rise10_start": boss_rise10_start,
+        "boss_rise10_end": boss_rise10_end,
+        "boss_rise_3b_start": boss_rise_3b_start,
+        "boss_rise3b_end": boss_rise3b_end,
+        "boss_sunset_start": boss_sunset_start,
+        "boss_sunset_end": boss_sunset_end,
+        "boss_set_start": boss_set_start,
+        "boss_set_end": boss_set_end,
+        "daytime_set_start": daytime_set_start,
+        "daytime_set_end": daytime_set_end,
+    }
 
 
 # Function to create a list of datetimes
@@ -70,105 +56,99 @@ def datetime_range(start, end, delta):
         current += delta
 
 
-# Create an empty DataFrame to store the final results
-final_result = []
+def create_date_times_list(date_range, result):
+    final_result = []
 
+    for date, res in zip(date_range, result):
+        boss_night_times = list(
+            datetime_range(
+                res["boss_night_start"], res["boss_night_end"], timedelta(seconds=3600)
+            )
+        )
 
-# Loop through the results and create a list of datetimes
-for date, res in zip(date_range, result):
-    boss_night_times = list(
-        datetime_range(
-            res["boss_night_start"], res["boss_night_end"], timedelta(seconds=3600)
+        boss_rise3a_times = list(
+            datetime_range(
+                res["boss_rise3a_start"],
+                res["boss_rise3a_end"],
+                timedelta(seconds=3600),
+            )
         )
-    )
+        boss_rise10_times = list(
+            datetime_range(
+                res["boss_rise10_start"], res["boss_rise10_end"], timedelta(days=1)
+            )
+        )
+        boss_rise3b_times = list(
+            datetime_range(
+                res["boss_rise_3b_start"],
+                res["boss_rise3b_end"],
+                timedelta(seconds=3600),
+            )
+        )
+        daytime_times = list(
+            datetime_range(
+                res["daytime_set_start"],
+                res["daytime_set_end"],
+                timedelta(seconds=3600),
+            )
+        )
+        boss_sunset_times = list(
+            datetime_range(
+                res["boss_sunset_start"],
+                res["boss_sunset_end"],
+                timedelta(seconds=3600),
+            )
+        )
+        boss_set_times = list(
+            datetime_range(
+                res["boss_set_start"], res["boss_set_end"], timedelta(seconds=3600)
+            )
+        )
 
-    boss_rise3a_times = list(
-        datetime_range(
-            res["boss_rise3a_start"], res["boss_rise3a_end"], timedelta(seconds=3600)
-        )
-    )
-    boss_rise10_times = list(
-        datetime_range(
-            res["boss_rise10_start"], res["boss_rise10_end"], timedelta(days=1)
-        )
-    )
-    boss_rise3b_times = list(
-        datetime_range(
-            res["boss_rise_3b_start"], res["boss_rise3b_end"], timedelta(seconds=3600)
-        )
-    )
-    daytime_times = list(
-        datetime_range(
-            res["daytime_set_start"], res["daytime_set_end"], timedelta(seconds=3600)
-        )
-    )
-    boss_sunset_times = list(
-        datetime_range(
-            res["boss_sunset_start"], res["boss_sunset_end"], timedelta(seconds=3600)
-        )
-    )
-    boss_set_times = list(
-        datetime_range(
-            res["boss_set_start"], res["boss_set_end"], timedelta(seconds=3600)
-        )
-    )
-
-    # fmt: off
-    boss_table = boss_night_times + boss_rise3a_times + boss_rise10_times + boss_rise3b_times + boss_sunset_times + boss_set_times + daytime_times
+        # fmt: off
+        boss_table = boss_night_times + boss_rise3a_times + boss_rise10_times + boss_rise3b_times + boss_sunset_times + boss_set_times + daytime_times
     
     
 
-    boss_table_df = pd.DataFrame({"date_time": boss_table})
-    boss_table_df["Site"] = "SandPond192450"
-    boss_table_df["ExtFormat"] = "wav"
-    boss_table_df["NewDate"] = boss_table_df["date_time"].dt.strftime("%Y%m%d_%H%M%S")
-    boss_table_df["Filename"] = (
-        boss_table_df["Site"]
-        + "_"
-        + boss_table_df["NewDate"]
-        + "."
-        + boss_table_df["ExtFormat"]
+        boss_table_df = pd.DataFrame({"date_time": boss_table})
+        boss_table_df["Site"] = "SandPond192450"
+        boss_table_df["ExtFormat"] = "wav"
+        boss_table_df["NewDate"] = boss_table_df["date_time"].dt.strftime("%Y%m%d_%H%M%S")
+        boss_table_df["Filename"] = (
+            boss_table_df["Site"]
+            + "_"
+            + boss_table_df["NewDate"]
+            + "."
+            + boss_table_df["ExtFormat"]
+        )
+
+        final_result.append(boss_table_df)
+
+    return pd.concat(final_result, ignore_index=True)
+
+
+def calculate_sunrise_sunset(df, latitude, longitude):
+    location = LocationInfo(latitude=latitude, longitude=longitude)
+
+    # Convert NewDate to datetime
+    df["NewDate"] = pd.to_datetime(df["NewDate"], format="%Y%m%d_%H%M%S")
+
+    df["sunrise"] = df["NewDate"].apply(
+        lambda x: sun(location.observer, date=x.date())["sunrise"]
     )
-
-    final_result.append(boss_table_df)
-
-combined_df = pd.concat(final_result, ignore_index=True)
-
-# Reading the selected columns
-combined_df = combined_df[["Filename", "Site", "date_time", "NewDate"]]
-
-combined_df["NewDate"] = pd.to_datetime(combined_df["NewDate"], format="%Y%m%d_%H%M%S")
-
-# Calculate sunrise and sunset times
-location = LocationInfo(latitude=latitude, longitude=longitude)
-sunrise_times = []
-sunset_times = []
-
-for date in combined_df["NewDate"]:
-    sunrise_time = sun(location.observer, date=date.date())["sunrise"]
-    sunset_time = sun(location.observer, date=date.date())["sunset"]
-    sunrise_times.append(sunrise_time)
-    sunset_times.append(sunset_time)
-
-
-# Converting to the tz-naive datetime to make it consistent with NewDate timestamps
-combined_df["sunrise"] = (
-    pd.Series(sunrise_times).dt.tz_convert(pytz.UTC).dt.tz_localize(None)
-)
-combined_df["sunset"] = (
-    pd.Series(sunset_times).dt.tz_convert(pytz.UTC).dt.tz_localize(None)
-)
-
-
-# Define early and late season dates
-early_start = pd.Timestamp("2021-07-05")
-early_end = pd.Timestamp("2021-07-31")
-# late_start = pd.Timestamp("2021-07-05")
-# late_end = pd.Timestamp("2021-08-31")
+    df["sunset"] = df["NewDate"].apply(
+        lambda x: sun(location.observer, date=x.date())["sunset"]
+    )
+    df["sunrise"] = df["sunrise"].dt.tz_convert(pytz.UTC).dt.tz_localize(None)
+    df["sunset"] = df["sunset"].dt.tz_convert(pytz.UTC).dt.tz_localize(None)
+    return df
 
 
 # Define time categories based on conditions
 def assign_time_category(row):
+    early_start = pd.Timestamp("2021-07-01")
+    early_end = pd.Timestamp("2021-08-25")
+
     sunrise = row["sunrise"]
     sunset = row["sunset"]
     current_time = row["NewDate"]
@@ -190,7 +170,7 @@ def assign_time_category(row):
     else:
         if current_time >= sunset - timedelta(
             seconds=4200
-        ) and current_time <= sunset + timedelta(seconds=600):
+        ) and current_time <= sunset + timedelta(seconds=580):
             return "Dusk"
         elif current_time >= sunrise + timedelta(
             seconds=19800
@@ -213,10 +193,15 @@ def assign_time_category(row):
             return "Nocturnal"
 
 
-# Assign time categories to each row
+latitude = 44.72
+longitude = -62.80
+start_date = pd.to_datetime("2021-07-05")
+end_date = pd.to_datetime("2021-08-31")
+date_range = pd.date_range(start_date, end_date, freq="D", tz="America/Halifax")
+sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
+final_result = create_date_times_list(date_range, sun_times)
+combined_df = calculate_sunrise_sunset(final_result, latitude, longitude)
 combined_df["TimeCategory"] = combined_df.apply(assign_time_category, axis=1)
-
-# Get random samples for each category
 sample_size = 8  # Change this value to the desired number of samples per category
 random_samples = combined_df.groupby("TimeCategory").apply(
     lambda x: x.sample(sample_size)
