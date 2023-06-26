@@ -30,10 +30,10 @@ def calculate_sun_times(date, latitude, longitude):
     daytime_set_start = sun_times["sunrise"] + timedelta(seconds=19800)
     daytime_set_end = sun_times["sunset"] - timedelta(seconds=3600)
 
-    before_sunset_start = sun_times["sunrise"] - timedelta(seconds=32400)
-    after_sunset_end = sun_times["sunrise"] - timedelta(seconds=25200)
+    # before_sunset_start = sun_times["sunrise"] - timedelta(seconds=32400)
+    # after_sunset_end = sun_times["sunrise"] - timedelta(seconds=25200)
 
-    # print(before_sunset_start, after_sunset_end)
+    # # print(before_sunset_start, after_sunset_end)
 
     return {
         "boss_night_start": boss_night_start,
@@ -50,8 +50,8 @@ def calculate_sun_times(date, latitude, longitude):
         "boss_set_end": boss_set_end,
         "daytime_set_start": daytime_set_start,
         "daytime_set_end": daytime_set_end,
-        "before_sunset_start": before_sunset_start,
-        "after_sunset_end": after_sunset_end,
+        # "before_sunset_start": before_sunset_start,
+        # "after_sunset_end": after_sunset_end,
     }
 
 
@@ -114,17 +114,17 @@ def create_date_times_list(date_range, result):
             )
         )
 
-        before_sunset_times = list(
-            datetime_range(
-                res["before_sunset_start"],
-                res["after_sunset_end"],
-                timedelta(seconds=1800),
-            )
-        )
+        # before_sunset_times = list(
+        #     datetime_range(
+        #         res["before_sunset_start"],
+        #         res["after_sunset_end"],
+        #         timedelta(seconds=1800),
+        #     )
+        # )
         # print(before_sunset_times)
 
         # fmt: off
-        boss_table = boss_night_times + boss_rise3a_times + boss_rise10_times + boss_rise3b_times + boss_sunset_times + boss_set_times + daytime_times + before_sunset_times
+        boss_table = boss_night_times + boss_rise3a_times + boss_rise10_times + boss_rise3b_times + boss_sunset_times + boss_set_times + daytime_times
         # print(boss_table)
 
         boss_table_df = pd.DataFrame({"date_time": boss_table})
@@ -157,8 +157,16 @@ def calculate_sunrise_sunset(df, latitude, longitude):
     df["sunset"] = df["NewDate"].apply(
         lambda x: sun(location.observer, date=x.date())["sunset"]
     )
-    df["sunrise"] = df["sunrise"].dt.tz_convert(pytz.UTC).dt.tz_localize(None)
-    df["sunset"] = df["sunset"].dt.tz_convert(pytz.UTC).dt.tz_localize(None)
+    df["sunrise"] = (
+        df["sunrise"]
+        .dt.tz_convert(pytz.timezone("America/Halifax"))
+        .dt.tz_localize(None)
+    )
+    df["sunset"] = (
+        df["sunset"]
+        .dt.tz_convert(pytz.timezone("America/Halifax"))
+        .dt.tz_localize(None)
+    )
     return df
 
 
@@ -186,40 +194,40 @@ def assign_time_category(row):
             return "EM"
         elif current_time > sunrise + timedelta(
             seconds=9036
-        ) and current_time <= sunrise + timedelta(seconds=18000):
+        ) and current_time <= sunrise + timedelta(seconds=19000):
             return "EL"
 
     else:
         if current_time >= sunset - timedelta(
-            seconds=12600
-        ) and current_time <= sunset + timedelta(seconds=3500):
+            seconds=4200
+        ) and current_time <= sunset + timedelta(seconds=600):
             return "Dusk"
         elif current_time >= sunrise + timedelta(
-            seconds=6300
-        ) and current_time < sunset - timedelta(seconds=3600):
+            seconds=19800
+        ) and current_time < sunset - timedelta(seconds=4500):
             return "Daytime"
 
         elif (
             # Check if current time is after sunset and before midnight
             (
-                current_time >= sunset + timedelta(seconds=3480)
+                current_time >= sunset + timedelta(seconds=5400)
                 and current_time <= sunset.replace(hour=23, minute=59, second=59)
             )
             or
             # Check if current time is after midnight and before sunrise
             (
                 current_time >= sunset.replace(hour=0, minute=0, second=0)
-                and current_time <= sunrise - timedelta(seconds=3910)
+                and current_time <= sunrise - timedelta(seconds=3600)
             )
         ):
             return "Nocturnal"
 
 
-latitude = 44.72
-longitude = -62.80
+latitude = 44.720528
+longitude = -62.800722
 start_date = pd.to_datetime("2021-07-05")
 end_date = pd.to_datetime("2021-08-31")
-date_range = pd.date_range(start_date, end_date, freq="D")
+date_range = pd.date_range(start_date, end_date, freq="D", tz="America/Halifax")
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 final_result = create_date_times_list(date_range, sun_times)
 combined_df = calculate_sunrise_sunset(final_result, latitude, longitude)
