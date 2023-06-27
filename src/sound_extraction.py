@@ -50,7 +50,24 @@ def main():
 
     def read_csv_file(csv_file_path, sampleFile, categories_col):
         """
-        Reads data from a CSV file and filters it based on a column name which has sample audio files and categories column
+        Reads data from a CSV file and filters it based on a column name which has sample audio files and categories column. It returns sample recordings and
+        a dictionary with sample recordings as keys and categories as values.
+
+        Args:
+            csv_file_path (str): The path to the CSV file to be read.
+            sampleFile (str): The name of the column containing sample audio files.
+            categories_col (str): The name of the column containing categories.
+
+        Returns:
+            tuple: A tuple containing two elements:
+                - list: A list of sample recordings.
+                - dict: A dictionary with sample recordings as keys and categories as values.
+
+        Steps:
+            1. Open the CSV file and read its content.
+            2. Find the indices of the sampleFile and categories_col columns.
+            3. Extract the relevant data from the CSV file.
+            4. Create a dictionary with sample recordings as keys and categories as values.
         """
         with open(csv_file_path, "r") as files:
             csv_reader = csv.reader(files)
@@ -58,8 +75,6 @@ def main():
             header = next(csv_reader)
 
             sampleFile_index = header.index(sampleFile)
-
-            # Checking if the categories column is present in the CSV file
 
             categories_bool = False
             if categories_col not in header:
@@ -72,15 +87,9 @@ def main():
             else:
                 categories_index = header.index(categories_col)
 
-            # storing the values in list so that it can be used once the file is closed
-
             rows = list(csv_reader)
 
-        # Filtering the sample recordings
-
         sample_recordings = [row[sampleFile_index] for row in rows]
-
-        # Checking if no column present then it will be empty string
 
         if categories_bool:
             categories = ["" for row in rows]
@@ -88,14 +97,31 @@ def main():
         else:
             categories = [row[categories_index] for row in rows]
 
-        # Creating a dictionary with sample recordings as keys and categories as values
-
         categories_dict = {k: v for k, v in zip(sample_recordings, categories)}
 
         return sample_recordings, categories_dict
 
     def process_recordings(all_files, sample_recordings):
-        # Filtering in actual recordings
+        """
+            Processes long recordings and matches them with the corresponding sample
+            recordings based on their timestamps. Returns a dictionary with long
+            recordings as keys and lists of associated sample recordings as values.
+
+        Args:
+            all_files (list): A list of all long recordings files.
+            sample_recordings (list): A list of sample recordings files.
+
+        Returns:
+            dict: A dictionary with long recordings as keys and lists of associated
+                  sample recordings as values.
+
+        Steps:
+            1. Filter and sort long recordings.
+            2. Iterate through long recordings and create a dictionary to store the
+               associated sample recordings.
+            3. Check if a sample recording falls within a long recording's time frame.
+            4. Filter the dictionary to remove empty lists and format the keys.
+        """
 
         long_recordings = [file for file in all_files if "T" in file]
 
@@ -103,16 +129,11 @@ def main():
         recordings_dict = {}
 
         for long_recording in long_recordings:
-            # Splitting the .flac extension from the filename so datetime can be parsed
-
             filename, extension = os.path.splitext(long_recording)
 
-            # Get the start and end datetime of the long recording
             # Putting try and except handling because there will be backup file with .flac and we need to avoid it
 
             long_start_datetime = datetime.datetime.strptime(filename, "%Y%m%dT%H%M%S")
-
-            # Getting the duration of the recording by checking the next long recording's start time and if there is one then,
 
             try:
                 next_long_recording = long_recordings[
@@ -125,8 +146,6 @@ def main():
                     - long_start_datetime
                 )
 
-            # Assuming the last recording of 3 hours
-
             except IndexError:
                 duration = datetime.timedelta(hours=3)
 
@@ -136,16 +155,11 @@ def main():
 
             recordings_dict[long_start_datetime] = []
 
-            # Using if condition to check that sample recording falls into long recording
-            # Finally producing the output: sample_recording
-
             for sample_recording in sample_recordings:
                 file, ext = os.path.splitext(sample_recording)
 
-                # Get the datetime of the sample recording
                 sample_datetime = datetime.datetime.strptime(file, "%Y%m%d_%H%M%S")
 
-                # Check if the sample recording falls within the current long recording's time frame
                 if long_start_datetime <= sample_datetime <= long_end_datetime:
                     recordings_dict[long_start_datetime].append(sample_recording)
 
@@ -175,31 +189,37 @@ def main():
     def extract_audio_segments(
         filtered_recordings_dict, output_directory, site_name, categories_dict
     ):
-        # Generating the subdirectory name
+        """
+        This function extracts audio segments from a dictionary of filtered recordings
+        and saves them into a specified output directory. If flag -span is used
+
+        Args:
+            filtered_recordings_dict (dict): A dictionary of filtered audio recordings.
+            output_directory (str): The directory path where extracted segments will be saved.
+            site_name (str): The name of the site where the recordings were taken.
+            categories_dict (dict): A dictionary containing the categories of recordings.
+
+        Steps:
+            1. Generate the subdirectory name for the output directory.
+            2. Create the output subdirectory.
+            3. Set the duration of the audio segments to be extracted.
+            4. Get the directories and files within the root directory.
+            5. Loop through each directory and extract the audio segments.
+        """
+
         subdir_name = generate_subdir_name()
 
-        # Creating the subdirectory
         output_subdirectory = os.path.join(output_directory, subdir_name)
         os.makedirs(output_subdirectory, exist_ok=True)
 
-        # Set the duration for the portion of the audio file to extract
-
         duration = datetime.timedelta(minutes=args.duration)
-
-        # Calling the function to get the directories
 
         directories, all_files = get_directories(root_directory)
 
         for directory in directories:
-            # Calling the function to get the original audio files
-
             recording_keys = sorted(os.listdir(directory))
 
-            # Looping through each key-value pair
-
             for key, value in filtered_recordings_dict.items():
-                # Checking if the key is in the original audio files
-
                 if key not in recording_keys:
                     continue
 
@@ -214,46 +234,31 @@ def main():
                     logging.error(f"Error reading audio file {key}: {e}")
                     continue
 
-                # Splitting the key values into datetime
-
                 split_key = os.path.splitext(key)[0]
-                # Getting the start time of the audio file from the actual recordings
 
                 start_time_parent = datetime.datetime.strptime(
                     split_key, "%Y%m%dT%H%M%S"
                 )
 
-                # Loop through each specified snippet in the value
-
                 for snippet in value:
                     start_time_str = os.path.splitext(snippet)[0]
-
-                    # Extract the start and end time for the snippet and parsing string as datetime object
 
                     start_time = datetime.datetime.strptime(
                         start_time_str, "%Y%m%d_%H%M%S"
                     )
 
-                    # Getting the actual start time of the snippet in the audio file
-
                     snippet_start_time = start_time - start_time_parent
-
-                    # Calculate the start and end frame indices for the portion of the audio file to extract into seconds
 
                     start_frame = int(snippet_start_time.total_seconds() * samplerate)
                     end_frame = int(
                         (snippet_start_time + duration).total_seconds() * samplerate
                     )
 
-                    # Checking the index of the current key
-
                     current_key_index = recording_keys.index(key)
 
                     # Due to the fact that the audio files are not of 3 mins duration so we need to check if the duration is less than 3 mins then we need to add the next audio file to it
 
                     if current_key_index + 1 < len(recording_keys):
-                        # Setting the duration of the snippet
-
                         duration_new = datetime.timedelta(minutes=args.duration)
 
                         next_key = recording_keys[current_key_index + 1]
@@ -271,7 +276,6 @@ def main():
                             continue
 
                         # Checking if the duration of the snippet is greater than the next key's start time and flag "-span" is used then it won't concatenate the audio files
-                        # It will calculate the exact duration of the files and then it will concatenate
 
                         if (
                             not args.span
@@ -286,17 +290,11 @@ def main():
                                 seconds=time_duration_second
                             )
 
-                            # Loading the next audio file
-
                             next_audio_file, next_samplerate = sf.read(
                                 os.path.join(directory, next_key)
                             )
 
-                            # Getting the remaining duration of the snippet
-
                             remaining_duration = duration_new - time_duration
-
-                            # Getting the remaining audio from the next audio file
 
                             remaining_audio = next_audio_file[
                                 : int(
@@ -304,8 +302,6 @@ def main():
                                 )
                                 + 1
                             ]
-
-                            # Concatenating the audio files
 
                             snippet_data = np.concatenate(
                                 (audio_file[start_frame:], remaining_audio)
@@ -319,11 +315,7 @@ def main():
 
                         snippet_data = audio_file[start_frame:end_frame]
 
-                    # Storing the user input for the extension
-
                     extension = args.extension
-
-                    # Write the extracted audio data to a new file
 
                     output_filename = os.path.splitext(snippet)[0] + extension
 
@@ -333,8 +325,6 @@ def main():
                         os.path.join(output_subdirectory, categories_dict[snippet]),
                         exist_ok=True,
                     )
-
-                    # Writing the new audio of 3 mins to the desired directory
 
                     export_segment = sf.write(
                         os.path.join(
@@ -349,29 +339,35 @@ def main():
         return export_segment, output_subdirectory
 
     def process_audio_files(directory, slice_duration, output_directory):
-        # Generating the subdirectory name
+        """
+            This function processes audio files in the given directory by slicing them
+            into smaller segments of a specified duration of seconds set by user and saves them into a specified
+            output directory.
+
+        Args:
+            directory (str): The directory containing the audio files to be processed.
+            slice_duration (float): The duration of each sliced segment in seconds.
+            output_directory (str): The directory path where sliced segments will be saved.
+
+        Steps:
+            1. Generate the subdirectory name for the output directory.
+            2. Create the output subdirectory.
+            3. Traverse the directory and process each audio file.
+        """
+
         subdir_name = generate_subdir_name()
 
-        # Creating the subdirectory
         output_subdirectory = os.path.join(output_directory, subdir_name)
         os.makedirs(output_subdirectory, exist_ok=True)
 
-        # Traversing the directories and files in the directory
-
         for root, dirs, files in os.walk(directory):
-            # Looping the files of that directory
-
             for file in files:
                 file_str = os.path.splitext(file)[0]
                 file_datetime = datetime.datetime.strptime(file_str, "%Y%m%dT%H%M%S")
 
                 audio, sample_rate = sf.read(os.path.join(root, file))
 
-                # total samples in the audio file
-
                 total_samples = len(audio)
-
-                # samples in each chunk
 
                 chunk_samples = int(slice_duration * sample_rate)
 
@@ -379,8 +375,6 @@ def main():
 
                 for i in range(0, total_samples, chunk_samples):
                     chunk = audio[i : i + chunk_samples]
-
-                    # Getting the start time of the audio file from the actual recordings and adding the chunk duration
 
                     recording_time = (
                         file_datetime + datetime.timedelta(seconds=start)
