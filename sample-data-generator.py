@@ -5,58 +5,68 @@ from astral import LocationInfo
 from astral.sun import sun
 import pytz
 
-
+# fmt: off
 def calculate_sun_times(date, latitude, longitude):
+    """
+    Getting the sunrise and sunset times for a given date and location. With that calculating different time ranges around sunrise and sunset.
+    Returning with dictionary with the calculated time ranges.
+    """
+
     sun_times = get_times(date, latitude, longitude)
+    sunrise = sun_times["sunrise"]
+    sunset = sun_times["sunset"]
 
-    boss_night_start = sun_times["sunrise"] - timedelta(seconds=18000)
-    boss_night_end = sun_times["sunrise"] - timedelta(seconds=7200)
+    night_start_time = sunrise - timedelta(seconds=18000)  # Night starts 5 hours before sunrise
+    night_end_time = sunrise - timedelta(seconds=7200)     # Night ends 2 hours before sunrise
 
-    boss_rise3a_start = sun_times["sunrise"] - timedelta(seconds=1800)
-    boss_rise3a_end = sun_times["sunrise"] + timedelta(seconds=16200)
+    sunrise_rise3a_start_time = sunrise - timedelta(seconds=1800)  # 30 minutes before sunrise
+    sunrise_rise3a_end_time = sunrise + timedelta(seconds=16200)   # 4.5 hours after sunrise
 
-    boss_rise10_start = sun_times["sunrise"] - timedelta(seconds=600)
-    boss_rise10_end = sun_times["sunrise"] - timedelta(seconds=600)
+    sunrise_rise10_start_time = sunrise - timedelta(seconds=600)  # 10 minutes before sunrise
+    sunrise_rise10_end_time = sunrise - timedelta(seconds=600)    # 10 minutes before sunrise
 
-    boss_rise_3b_start = sun_times["sunrise"] - timedelta(seconds=3600)
-    boss_rise3b_end = sun_times["sunrise"] + timedelta(seconds=18000)
+    sunrise_rise3b_start_time = sunrise - timedelta(seconds=3600) # 1 hour before sunrise
+    sunrise_rise3b_end_time = sunrise + timedelta(seconds=18000)  # 5 hours after sunrise
 
-    boss_sunset_start = sun_times["sunset"] - timedelta(seconds=1800)
-    boss_sunset_end = sun_times["sunset"] + timedelta(seconds=5400)
+    sunset_start_time = sunset - timedelta(seconds=1800)    # 30 minutes before sunset
+    sunset_end_time = sunset + timedelta(seconds=5400)      # 1.5 hours after sunset
 
-    boss_set_start = sun_times["sunset"] - timedelta(seconds=3600)
-    boss_set_end = sun_times["sunset"] + timedelta(seconds=3600)
+    boss_set_start = sunset - timedelta(seconds=3600)       # 1 hour before sunset
+    boss_set_end = sunset + timedelta(seconds=3600)         # 1 hour after sunset
 
-    daytime_set_start = sun_times["sunrise"] + timedelta(seconds=19800)
-    daytime_set_end = sun_times["sunset"] - timedelta(seconds=3600)
+    daytime_start_time = sunrise + timedelta(seconds=19800)     # 5.5 hours after sunrise
+    daytime_end_time = sunset - timedelta(seconds=3600)         # 1 hour before sunset
 
-    # before_sunset_start = sun_times["sunrise"] - timedelta(seconds=32400)
-    # after_sunset_end = sun_times["sunrise"] - timedelta(seconds=25200)
+    sunset_before_start_time = sunrise - timedelta(seconds=36000) # 10 hours before sunrise
+    sunset_after_end_time = sunrise - timedelta(seconds=27000)    # 7.5 hours before sunrise
 
-    # # print(before_sunset_start, after_sunset_end)
+    # # print(sunset_before_start_time, sunset_after_end_time)
 
     return {
-        "boss_night_start": boss_night_start,
-        "boss_night_end": boss_night_end,
-        "boss_rise3a_start": boss_rise3a_start,
-        "boss_rise3a_end": boss_rise3a_end,
-        "boss_rise10_start": boss_rise10_start,
-        "boss_rise10_end": boss_rise10_end,
-        "boss_rise_3b_start": boss_rise_3b_start,
-        "boss_rise3b_end": boss_rise3b_end,
-        "boss_sunset_start": boss_sunset_start,
-        "boss_sunset_end": boss_sunset_end,
+        "night_start_time": night_start_time,
+        "night_end_time": night_end_time,
+        "sunrise_rise3a_start_time": sunrise_rise3a_start_time,
+        "sunrise_rise3a_end_time": sunrise_rise3a_end_time,
+        "sunrise_rise10_start_time": sunrise_rise10_start_time,
+        "sunrise_rise10_end_time": sunrise_rise10_end_time,
+        "sunrise_rise3b_start_time": sunrise_rise3b_start_time,
+        "sunrise_rise3b_end_time": sunrise_rise3b_end_time,
+        "sunset_start_time": sunset_start_time,
+        "sunset_end_time": sunset_end_time,
         "boss_set_start": boss_set_start,
         "boss_set_end": boss_set_end,
-        "daytime_set_start": daytime_set_start,
-        "daytime_set_end": daytime_set_end,
-        # "before_sunset_start": before_sunset_start,
-        # "after_sunset_end": after_sunset_end,
+        "daytime_start_time": daytime_start_time,
+        "daytime_end_time": daytime_end_time,
+        "sunset_before_start_time": sunset_before_start_time,
+        "sunset_after_end_time": sunset_after_end_time,
     }
 
 
-# Function to create a list of datetimes
+
 def datetime_range(start, end, delta):
+    """
+    Creating a list of datetime objects between two given datetime objects with a given delta.
+    """
     current = start
     while current <= end:
         yield current
@@ -64,46 +74,56 @@ def datetime_range(start, end, delta):
 
 
 def create_date_times_list(date_range, result):
+    """
+    Generate a list of date times for different time ranges based on the given range of dates and result. Result is a dictionary with the calculated time ranges.
+
+    This function iterates through the input date_range and result, creating lists of date times for
+    various time ranges such as night times, sunrise times, daytime times, and sunset times.
+    The date times are then combined into a single DataFrame with additional information such as
+    Site, ExtFormat, and Filename.
+    """
     final_result = []
 
     for date, res in zip(date_range, result):
         boss_night_times = list(
             datetime_range(
-                res["boss_night_start"], res["boss_night_end"], timedelta(seconds=3600)
+                res["night_start_time"], res["night_end_time"], timedelta(seconds=3600)
             )
         )
         # print(boss_night_times)
 
         boss_rise3a_times = list(
             datetime_range(
-                res["boss_rise3a_start"],
-                res["boss_rise3a_end"],
+                res["sunrise_rise3a_start_time"],
+                res["sunrise_rise3a_end_time"],
                 timedelta(seconds=3600),
             )
         )
         boss_rise10_times = list(
             datetime_range(
-                res["boss_rise10_start"], res["boss_rise10_end"], timedelta(days=1)
+                res["sunrise_rise10_start_time"],
+                res["sunrise_rise10_end_time"],
+                timedelta(days=1),
             )
         )
         boss_rise3b_times = list(
             datetime_range(
-                res["boss_rise_3b_start"],
-                res["boss_rise3b_end"],
+                res["sunrise_rise3b_start_time"],
+                res["sunrise_rise3b_end_time"],
                 timedelta(seconds=3600),
             )
         )
         daytime_times = list(
             datetime_range(
-                res["daytime_set_start"],
-                res["daytime_set_end"],
+                res["daytime_start_time"],
+                res["daytime_end_time"],
                 timedelta(seconds=3600),
             )
         )
         boss_sunset_times = list(
             datetime_range(
-                res["boss_sunset_start"],
-                res["boss_sunset_end"],
+                res["sunset_start_time"],
+                res["sunset_end_time"],
                 timedelta(seconds=3600),
             )
         )
@@ -114,17 +134,17 @@ def create_date_times_list(date_range, result):
             )
         )
 
-        # before_sunset_times = list(
-        #     datetime_range(
-        #         res["before_sunset_start"],
-        #         res["after_sunset_end"],
-        #         timedelta(seconds=1800),
-        #     )
-        # )
+        before_sunset_times = list(
+            datetime_range(
+                res["sunset_before_start_time"],
+                res["sunset_after_end_time"],
+                timedelta(seconds=1800),
+            )
+        )
         # print(before_sunset_times)
 
         # fmt: off
-        boss_table = boss_night_times + boss_rise3a_times + boss_rise10_times + boss_rise3b_times + boss_sunset_times + boss_set_times + daytime_times
+        boss_table = boss_night_times + boss_rise3a_times + boss_rise10_times + boss_rise3b_times + boss_sunset_times + boss_set_times + daytime_times + before_sunset_times
         # print(boss_table)
 
         boss_table_df = pd.DataFrame({"date_time": boss_table})
@@ -146,9 +166,16 @@ def create_date_times_list(date_range, result):
 
 
 def calculate_sunrise_sunset(df, latitude, longitude):
+    """
+    Calculate sunrise and sunset times for each date in the input DataFrame.
+
+    This function takes a DataFrame containing a 'NewDate' column with date-time values, and
+    calculates the corresponding sunrise and sunset times for each date based on the provided
+    latitude and longitude. The resulting sunrise and sunset times are then added as new columns
+    to the input DataFrame.
+    """
     location = LocationInfo(latitude=latitude, longitude=longitude)
 
-    # Convert NewDate to datetime
     df["NewDate"] = pd.to_datetime(df["NewDate"], format="%Y%m%d_%H%M%S")
 
     df["sunrise"] = df["NewDate"].apply(
@@ -172,6 +199,13 @@ def calculate_sunrise_sunset(df, latitude, longitude):
 
 # Define time categories based on conditions
 def assign_time_category(row):
+    """
+    Assign a time category to each row of a DataFrame based on the 'NewDate' column.
+
+    This function takes a DataFrame row containing 'NewDate', 'sunrise', and 'sunset' columns,
+    and assigns a time category based on the current time, sunrise, and sunset times. The time
+    categories include 'EE- Early Breeding', 'EM- Early Mid-Breeding', 'EL-Early Late Breeding', 'Nocturnal', 'Dusk', and 'Daytime'.
+    """
     early_start = pd.Timestamp("2021-07-01")
     early_end = pd.Timestamp("2021-08-25")
 
@@ -185,7 +219,7 @@ def assign_time_category(row):
 
     if early_start <= current_time <= early_end:
         if current_time >= sunrise - timedelta(
-            seconds=3900
+            seconds=5000
         ) and current_time <= sunrise + timedelta(seconds=2940):
             return "EE"
         elif current_time > sunrise + timedelta(
@@ -196,6 +230,8 @@ def assign_time_category(row):
             seconds=9036
         ) and current_time <= sunrise + timedelta(seconds=19000):
             return "EL"
+        else:
+            return "Nocturnal"
 
     else:
         if current_time >= sunset - timedelta(
@@ -208,13 +244,11 @@ def assign_time_category(row):
             return "Daytime"
 
         elif (
-            # Check if current time is after sunset and before midnight
             (
                 current_time >= sunset + timedelta(seconds=5400)
                 and current_time <= sunset.replace(hour=23, minute=59, second=59)
             )
             or
-            # Check if current time is after midnight and before sunrise
             (
                 current_time >= sunset.replace(hour=0, minute=0, second=0)
                 and current_time <= sunrise - timedelta(seconds=3600)
@@ -222,6 +256,9 @@ def assign_time_category(row):
         ):
             return "Nocturnal"
 
+
+
+# Calling the variables and functions
 
 latitude = 44.720528
 longitude = -62.800722
