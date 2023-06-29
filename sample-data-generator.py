@@ -1,5 +1,6 @@
 import pandas as pd
-from datetime import datetime, timedelta
+import argparse
+from datetime import timedelta
 from suncalc import get_times
 from astral import LocationInfo
 from astral.sun import sun
@@ -161,7 +162,7 @@ def create_date_times_list(date_range, result):
         )
 
         final_result.append(merged_timings_df)
-
+        
     return pd.concat(final_result, ignore_index=True)
 
 
@@ -257,14 +258,24 @@ def assign_time_category(row):
             return "Nocturnal"
    
 
+parser = argparse.ArgumentParser(
+    description="Generating random samples from a list of date-times"
+)
 
+parser.add_argument('--latitude', type=float, required=True, help='Latitude of the site')
+parser.add_argument('--longitude', type=float, help='Longitude of the site')
+parser.add_argument('--start_date', type=str, help='Start date of the sampling period')
+parser.add_argument('--end_date', type=str, help='End date of the sampling period')
+parser.add_argument('--sample_size', type=int, help='Number of samples per category')
+
+args = parser.parse_args()
 
 # Calling the variables and functions
 
-latitude = 47.2047
-longitude = -60.1509
-start_date = pd.to_datetime("2021-07-05")
-end_date = pd.to_datetime("2021-08-31")
+latitude = args.latitude
+longitude = args.longitude
+start_date = pd.to_datetime(args.start_date)
+end_date = pd.to_datetime(args.end_date)
 date_range = pd.date_range(start_date, end_date, freq="D", tz="America/Halifax")
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 final_result = create_date_times_list(date_range, sun_times)
@@ -272,7 +283,7 @@ combined_timings = calculate_sunrise_sunset(final_result, latitude, longitude)
 combined_timings["TimeCategory"] = combined_timings.apply(assign_time_category, axis=1)
 # print(combined_timings)
 combined_timings.to_csv("sample-data.csv", index=False)
-sample_size = 4  # Change this value to the desired number of samples per category
+sample_size = args.sample_size  # Change this value to the desired number of samples per category
 random_samples = combined_timings.groupby("TimeCategory").apply(
     lambda x: x.sample(sample_size)
 )
@@ -280,4 +291,4 @@ random_samples = combined_timings.groupby("TimeCategory").apply(
 # Reset index
 random_samples.reset_index(drop=True, inplace=True)
 # random_samples.to_csv("sample-data.csv", index=False)
-# print(random_samples)
+print(random_samples)
