@@ -207,8 +207,6 @@ def assign_time_category(row):
     and assigns a time category based on the current time, sunrise, and sunset times. The time
     categories include 'EE- Early Breeding', 'EM- Early Mid-Breeding', 'EL-Early Late Breeding', 'Nocturnal', 'Dusk', and 'Daytime'.
     """
-    early_start = pd.Timestamp("2021-07-01")
-    early_end = pd.Timestamp("2021-08-25")
 
     sunrise = row["sunrise"]
     sunset = row["sunset"]
@@ -218,43 +216,33 @@ def assign_time_category(row):
     #     f"Sunset: {row['sunset']}, Sunrise: {row['sunrise']}, Current Time: {row['NewDate']}"
     # )
 
-    if early_start <= current_time <= early_end:
-        if current_time >= sunrise - timedelta(
-            seconds=5000
-        ) and current_time <= sunrise + timedelta(seconds=2940):
-            return "EE"
-        elif current_time > sunrise + timedelta(
-            seconds=3000
-        ) and current_time <= sunrise + timedelta(seconds=9000):
-            return "EM"
-        elif current_time > sunrise + timedelta(
-            seconds=9036
-        ) and current_time <= sunrise + timedelta(seconds=19000):
-            return "EL"
+
+    if current_time >= sunrise - timedelta(
+        seconds=3900
+    ) and current_time <= sunrise + timedelta(seconds=3594):
+        return "EarlyAM"
+    elif current_time > sunrise + timedelta(
+        seconds=3600
+    ) and current_time <= sunrise + timedelta(seconds=8994):
+        return "MidAM"
+    elif current_time > sunrise + timedelta(
+        seconds=9000
+    ) and current_time <= sunrise + timedelta(seconds=17994):
+        return "lateAM"
         # else:
         #     return "Nocturnal"
 
     else:
         if current_time >= sunset - timedelta(
             seconds=4200
-        ) and current_time <= sunset + timedelta(seconds=600):
+        ) and current_time <= sunset + timedelta(seconds=594):
             return "Dusk"
         elif current_time >= sunrise + timedelta(
-            seconds=19800
-        ) and current_time < sunset - timedelta(seconds=4500):
+            seconds=18000
+        ) and current_time < sunset - timedelta(seconds=4206):
             return "Daytime"
-
-        elif (
-            (
-                current_time >= sunset + timedelta(seconds=5400)
-                and current_time <= sunset.replace(hour=23, minute=59, second=59)
-            )
-            or
-            (
-                current_time >= sunset.replace(hour=0, minute=0, second=0)
-                and current_time <= sunrise - timedelta(seconds=3600)
-            )
-        ):
+        
+        else:
             return "Nocturnal"
    
 
@@ -290,5 +278,5 @@ random_samples = combined_timings.groupby("TimeCategory").apply(
 
 # Reset index
 random_samples.reset_index(drop=True, inplace=True)
-# random_samples.to_csv("sample-data.csv", index=False
+# random_samples.to_csv("sample-data.csv", index=False)
 print(random_samples)

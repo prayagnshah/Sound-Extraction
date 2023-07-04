@@ -3,85 +3,162 @@ import pytest
 from unittest.mock import patch
 import pytest
 import os
+import datetime
 # from src.sound_extraction import get_directories, read_csv_file
 
 
 # This is your actual code to be tested 
-def get_directories(root_directory):
-    all_files = []
-    directory = []
+# def get_directories(root_directory):
+#     all_files = []
+#     directory = []
 
-    for root, dirs, files in os.walk(root_directory):
-        ext_found = False
+#     for root, dirs, files in os.walk(root_directory):
+#         ext_found = False
 
-        for file in files:
-            if file.endswith(".flac"):
-                all_files.append(file)
-                ext_found = True
-            else:
-                print(f"File {file} is not a .flac file")
+#         for file in files:
+#             if file.endswith(".flac"):
+#                 all_files.append(file)
+#                 ext_found = True
+#             else:
+#                 print(f"File {file} is not a .flac file")
 
-        if ext_found:
-            directory.append(root)
+#         if ext_found:
+#             directory.append(root)
 
-    return directory, all_files
+#     return directory, all_files
 
 # The following is the test case to check the directories and files
 
-def read_csv_file(csv_file_path, sampleFile, categories_col):
+# def read_csv_file(csv_file_path, sampleFile, categories_col):
+#         """
+#         Reads data from a CSV file and filters it based on a column name which has sample audio files and categories column. It returns sample recordings and
+#         a dictionary with sample recordings as keys and categories as values.
+
+#         Args:
+#             csv_file_path (str): The path to the CSV file to be read.
+#             sampleFile (str): The name of the column containing sample audio files.
+#             categories_col (str): The name of the column containing categories.
+
+#         Returns:
+#             tuple: A tuple containing two elements:
+#                 - list: A list of sample recordings.
+#                 - dict: A dictionary with sample recordings as keys and categories as values.
+
+#         Steps:
+#             1. Open the CSV file and read its content.
+#             2. Find the indices of the sampleFile and categories_col columns.
+#             3. Extract the relevant data from the CSV file.
+#             4. Create a dictionary with sample recordings as keys and categories as values.
+#         """
+#         with open(csv_file_path, "r") as files:
+#             csv_reader = csv.reader(files)
+
+#             header = next(csv_reader)
+
+#             sampleFile_index = header.index(sampleFile)
+
+#             categories_bool = False
+#             if categories_col not in header:
+#                 print(
+#                     "Categories column not found in CSV file, so there is no folder named Nocturnal, Daytime, etc."
+#                 )
+
+#                 categories_bool = True
+
+#             else:
+#                 categories_index = header.index(categories_col)
+
+#             rows = list(csv_reader)
+
+#         sample_recordings = [row[sampleFile_index] for row in rows]
+
+#         if categories_bool:
+#             categories = ["" for row in rows]
+
+#         else:
+#             categories = [row[categories_index] for row in rows]
+
+#         categories_dict = {k: v for k, v in zip(sample_recordings, categories)}
+
+#         return sample_recordings, categories_dict
+    
+    
+    
+def process_recordings(all_files, sample_recordings):
         """
-        Reads data from a CSV file and filters it based on a column name which has sample audio files and categories column. It returns sample recordings and
-        a dictionary with sample recordings as keys and categories as values.
+            Processes long recordings and matches them with the corresponding sample
+            recordings based on their timestamps. Returns a dictionary with long
+            recordings as keys and lists of associated sample recordings as values.
 
         Args:
-            csv_file_path (str): The path to the CSV file to be read.
-            sampleFile (str): The name of the column containing sample audio files.
-            categories_col (str): The name of the column containing categories.
+            all_files (list): A list of all long recordings files.
+            sample_recordings (list): A list of sample recordings files.
 
         Returns:
-            tuple: A tuple containing two elements:
-                - list: A list of sample recordings.
-                - dict: A dictionary with sample recordings as keys and categories as values.
+            dict: A dictionary with long recordings as keys and lists of associated
+                  sample recordings as values.
 
         Steps:
-            1. Open the CSV file and read its content.
-            2. Find the indices of the sampleFile and categories_col columns.
-            3. Extract the relevant data from the CSV file.
-            4. Create a dictionary with sample recordings as keys and categories as values.
+            1. Filter and sort long recordings.
+            2. Iterate through long recordings and create a dictionary to store the
+               associated sample recordings.
+            3. Check if a sample recording falls within a long recording's time frame.
+            4. Filter the dictionary to remove empty lists and format the keys.
         """
-        with open(csv_file_path, "r") as files:
-            csv_reader = csv.reader(files)
 
-            header = next(csv_reader)
+        long_recordings = [file for file in all_files if "T" in file]
 
-            sampleFile_index = header.index(sampleFile)
+        long_recordings.sort()
+        recordings_dict = {}
 
-            categories_bool = False
-            if categories_col not in header:
-                print(
-                    "Categories column not found in CSV file, so there is no folder named Nocturnal, Daytime, etc."
+        for long_recording in long_recordings:
+            filename, extension = os.path.splitext(long_recording)
+
+            # Putting try and except handling because there will be backup file with .flac and we need to avoid it
+
+            long_start_datetime = datetime.datetime.strptime(filename, "%Y%m%dT%H%M%S")
+
+            try:
+                next_long_recording = long_recordings[
+                    long_recordings.index(long_recording) + 1
+                ]
+                next_filename, next_extension = os.path.splitext(next_long_recording)
+
+                duration = (
+                    datetime.datetime.strptime(next_filename, "%Y%m%dT%H%M%S")
+                    - long_start_datetime
                 )
 
-                categories_bool = True
+            except IndexError:
+                duration = datetime.timedelta(hours=3)
 
-            else:
-                categories_index = header.index(categories_col)
+            long_end_datetime = long_start_datetime + duration
 
-            rows = list(csv_reader)
+            # Create an empty list to hold sample recordings that fall within this long recording's time frame
 
-        sample_recordings = [row[sampleFile_index] for row in rows]
+            recordings_dict[long_start_datetime] = []
 
-        if categories_bool:
-            categories = ["" for row in rows]
+            for sample_recording in sample_recordings:
+                file, ext = os.path.splitext(sample_recording)
 
-        else:
-            categories = [row[categories_index] for row in rows]
+                sample_datetime = datetime.datetime.strptime(file, "%Y%m%d_%H%M%S")
 
-        categories_dict = {k: v for k, v in zip(sample_recordings, categories)}
+                if long_start_datetime <= sample_datetime <= long_end_datetime:
+                    recordings_dict[long_start_datetime].append(sample_recording)
 
-        return sample_recordings, categories_dict
-    
-    
+        # Storing the user input for the extension
+
+        extension = ".flac"
+
+        # Removing the empty lists and showing the output with the data which has files in it
+
+        filtered_recordings_dict = {
+            key.strftime("%Y%m%dT%H%M%S") + extension: value
+            for key, value in recordings_dict.items()
+            if value
+        }
+
+        return filtered_recordings_dict
     
     
     
@@ -155,3 +232,21 @@ def test_read_csv_file_without_data():
     
     # Remove the mock CSV file
     os.remove('test.csv')
+    
+    
+
+def test_process_recordings():
+    # Test to check the sample recordings are in the long recordings time frame
+    all_files = ["20220506T122345.flac", "20220506T125621.flac", "20220506T130000.flac"]
+    sample_recordings = ["20220506_122400.flac", "20220506_125700.flac", "20220506_130100.flac"]
+        
+    # Call the function
+    recordings_dict = process_recordings(all_files, sample_recordings)
+    
+    # Assert that the function returns the expected output
+    assert recordings_dict == {
+        "20220506T122345.flac": ["20220506_122400.flac"],
+        "20220506T125621.flac": ["20220506_125700.flac"],
+        "20220506T130000.flac": ["20220506_130100.flac"],
+    }
+    
