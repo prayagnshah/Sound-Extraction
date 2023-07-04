@@ -17,7 +17,7 @@ def calculate_sun_times(date, latitude, longitude):
     sunrise = sun_times["sunrise"]
     sunset = sun_times["sunset"]
 
-    night_start_time = sunrise - timedelta(seconds=18000)  # Night starts 5 hours before sunrise
+    night_start_time = sunrise - timedelta(seconds=21600)  # Night starts 6 hours before sunrise
     night_end_time = sunrise - timedelta(seconds=7200)     # Night ends 2 hours before sunrise
 
     sunrise_rise3a_start_time = sunrise - timedelta(seconds=1800)  # 30 minutes before sunrise
@@ -29,14 +29,14 @@ def calculate_sun_times(date, latitude, longitude):
     sunset_start_time = sunset - timedelta(seconds=1800)    # 30 minutes before sunset
     sunset_end_time = sunset + timedelta(seconds=5400)      # 1.5 hours after sunset
 
-    boss_set_start = sunset - timedelta(seconds=3600)       # 1 hour before sunset
-    boss_set_end = sunset + timedelta(seconds=3600)         # 1 hour after sunset
+    # boss_set_start = sunset - timedelta(seconds=3600)       # 1 hour before sunset
+    # boss_set_end = sunset + timedelta(seconds=3600)         # 1 hour after sunset
 
     daytime_start_time = sunrise + timedelta(seconds=19800)       # 5.5 hours after sunrise
     daytime_end_time = sunrise + timedelta(seconds=48600)         # 13.5 hours after sunrise
 
-    sunset_before_start_time = sunrise - timedelta(seconds=36000) # 10 hours before sunrise
-    sunset_after_end_time = sunset - timedelta(seconds=27000)    # 7.5 hours before sunrise
+    sunset_before_start_time = sunset - timedelta(seconds=3600) # 10 hours before sunrise
+    sunset_after_end_time = sunset - timedelta(seconds=5400)    # 7.5 hours before sunrise
 
     # # print(sunset_before_start_time, sunset_after_end_time)
 
@@ -49,8 +49,8 @@ def calculate_sun_times(date, latitude, longitude):
         "sunrise_rise3b_end_time": sunrise_rise3b_end_time,
         "sunset_start_time": sunset_start_time,
         "sunset_end_time": sunset_end_time,
-        "boss_set_start": boss_set_start,
-        "boss_set_end": boss_set_end,
+        # "boss_set_start": boss_set_start,
+        # "boss_set_end": boss_set_end,
         "daytime_start_time": daytime_start_time,
         "daytime_end_time": daytime_end_time,
         "sunset_before_start_time": sunset_before_start_time,
@@ -118,11 +118,11 @@ def create_date_times_list(date_range, result):
             )
         )
         # print(sunset_times_list)
-        aftersunset_times_list = list(
-            datetime_range(
-                res["boss_set_start"], res["boss_set_end"], timedelta(seconds=3600)
-            )
-        )
+        # aftersunset_times_list = list(
+        #     datetime_range(
+        #         res["boss_set_start"], res["boss_set_end"], timedelta(seconds=3600)
+        #     )
+        # )
 
         beforesunset_times_list = list(
             datetime_range(
@@ -134,7 +134,7 @@ def create_date_times_list(date_range, result):
         # print(beforesunset_times_list)
 
         # fmt: off
-        merged_timings = night_times_list + sunrise3a_times_list + sunrise3b_times_list + sunset_times_list + aftersunset_times_list + daytime_times_list + beforesunset_times_list
+        merged_timings = night_times_list + sunrise3a_times_list + sunrise3b_times_list + sunset_times_list + daytime_times_list + beforesunset_times_list
 
         merged_timings_df = pd.DataFrame({"date_time": merged_timings})
         # print(merged_timings_df)
