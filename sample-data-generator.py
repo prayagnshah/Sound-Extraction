@@ -23,9 +23,6 @@ def calculate_sun_times(date, latitude, longitude):
     sunrise_rise3a_start_time = sunrise - timedelta(seconds=1800)  # 30 minutes before sunrise
     sunrise_rise3a_end_time = sunrise + timedelta(seconds=16200)   # 4.5 hours after sunrise
 
-    sunrise_rise10_start_time = sunrise - timedelta(seconds=600)  # 10 minutes before sunrise
-    sunrise_rise10_end_time = sunrise - timedelta(seconds=600)    # 10 minutes before sunrise
-
     sunrise_rise3b_start_time = sunrise - timedelta(seconds=3600) # 1 hour before sunrise
     sunrise_rise3b_end_time = sunrise + timedelta(seconds=18000)  # 5 hours after sunrise
 
@@ -36,10 +33,10 @@ def calculate_sun_times(date, latitude, longitude):
     boss_set_end = sunset + timedelta(seconds=3600)         # 1 hour after sunset
 
     daytime_start_time = sunrise + timedelta(seconds=19800)     # 5.5 hours after sunrise
-    daytime_end_time = sunset - timedelta(seconds=3600)         # 1 hour before sunset
+    daytime_end_time = sunrise + timedelta(seconds=35600)         # 1 hour before sunset
 
     sunset_before_start_time = sunrise - timedelta(seconds=36000) # 10 hours before sunrise
-    sunset_after_end_time = sunrise - timedelta(seconds=27000)    # 7.5 hours before sunrise
+    sunset_after_end_time = sunset - timedelta(seconds=27000)    # 7.5 hours before sunrise
 
     # # print(sunset_before_start_time, sunset_after_end_time)
 
@@ -48,8 +45,6 @@ def calculate_sun_times(date, latitude, longitude):
         "night_end_time": night_end_time,
         "sunrise_rise3a_start_time": sunrise_rise3a_start_time,
         "sunrise_rise3a_end_time": sunrise_rise3a_end_time,
-        "sunrise_rise10_start_time": sunrise_rise10_start_time,
-        "sunrise_rise10_end_time": sunrise_rise10_end_time,
         "sunrise_rise3b_start_time": sunrise_rise3b_start_time,
         "sunrise_rise3b_end_time": sunrise_rise3b_end_time,
         "sunset_start_time": sunset_start_time,
@@ -100,13 +95,6 @@ def create_date_times_list(date_range, result):
                 timedelta(seconds=3600),
             )
         )
-        sunrise10_times_list = list(
-            datetime_range(
-                res["sunrise_rise10_start_time"],
-                res["sunrise_rise10_end_time"],
-                timedelta(days=1),
-            )
-        )
         sunrise3b_times_list = list(
             datetime_range(
                 res["sunrise_rise3b_start_time"],
@@ -121,6 +109,7 @@ def create_date_times_list(date_range, result):
                 timedelta(seconds=3600),
             )
         )
+        # print(daytime_times_list)
         sunset_times_list = list(
             datetime_range(
                 res["sunset_start_time"],
@@ -145,8 +134,7 @@ def create_date_times_list(date_range, result):
         # print(beforesunset_times_list)
 
         # fmt: off
-        merged_timings = night_times_list + sunrise3a_times_list + sunrise10_times_list + sunrise3b_times_list + sunset_times_list + aftersunset_times_list + daytime_times_list + beforesunset_times_list
-        # print(merged_timings)
+        merged_timings = night_times_list + sunrise3a_times_list + sunrise3b_times_list + sunset_times_list + aftersunset_times_list + daytime_times_list + beforesunset_times_list
 
         merged_timings_df = pd.DataFrame({"date_time": merged_timings})
         # print(merged_timings_df)
@@ -161,6 +149,7 @@ def create_date_times_list(date_range, result):
             + merged_timings_df["ExtFormat"]
         )
 
+        merged_timings_df = merged_timings_df.drop(["date_time"], axis=1)
         final_result.append(merged_timings_df)
         
     return pd.concat(final_result, ignore_index=True)
@@ -228,22 +217,21 @@ def assign_time_category(row):
     elif current_time > sunrise + timedelta(
         seconds=9000
     ) and current_time <= sunrise + timedelta(seconds=17994):
-        return "lateAM"
+        return "LateAM"
         # else:
         #     return "Nocturnal"
 
-    else:
-        if current_time >= sunset - timedelta(
+    elif current_time > sunset - timedelta(
             seconds=4200
         ) and current_time <= sunset + timedelta(seconds=594):
             return "Dusk"
-        elif current_time >= sunrise + timedelta(
-            seconds=18000
-        ) and current_time < sunset - timedelta(seconds=4206):
-            return "Daytime"
-        
-        else:
-            return "Nocturnal"
+    elif current_time > sunrise + timedelta(
+        seconds=18000
+    ) and current_time <= sunset - timedelta(seconds=4206):
+        return "Daytime"
+    
+    else:
+        return "Nocturnal"
    
 
 parser = argparse.ArgumentParser(
@@ -270,7 +258,7 @@ final_result = create_date_times_list(date_range, sun_times)
 combined_timings = calculate_sunrise_sunset(final_result, latitude, longitude)
 combined_timings["TimeCategory"] = combined_timings.apply(assign_time_category, axis=1)
 # print(combined_timings)
-combined_timings.to_csv("sample-data.csv", index=False)
+combined_timings.to_csv("sample-data.csv", date_format='%Y-%m-%d %H:%M:%S', index=False)
 sample_size = args.sample_size  # Change this value to the desired number of samples per category
 random_samples = combined_timings.groupby("TimeCategory").apply(
     lambda x: x.sample(sample_size)
