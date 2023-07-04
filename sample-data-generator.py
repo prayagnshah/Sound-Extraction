@@ -32,8 +32,8 @@ def calculate_sun_times(date, latitude, longitude):
     boss_set_start = sunset - timedelta(seconds=3600)       # 1 hour before sunset
     boss_set_end = sunset + timedelta(seconds=3600)         # 1 hour after sunset
 
-    daytime_start_time = sunrise + timedelta(seconds=19800)     # 5.5 hours after sunrise
-    daytime_end_time = sunrise + timedelta(seconds=35600)         # 1 hour before sunset
+    daytime_start_time = sunrise + timedelta(seconds=19800)       # 5.5 hours after sunrise
+    daytime_end_time = sunrise + timedelta(seconds=48600)         # 13.5 hours after sunrise
 
     sunset_before_start_time = sunrise - timedelta(seconds=36000) # 10 hours before sunrise
     sunset_after_end_time = sunset - timedelta(seconds=27000)    # 7.5 hours before sunrise
@@ -141,7 +141,7 @@ def create_date_times_list(date_range, result):
         merged_timings_df["Site"] = "SandPond192450"
         merged_timings_df["ExtFormat"] = "wav"
         merged_timings_df["NewDate"] = merged_timings_df["date_time"].dt.strftime("%Y%m%d_%H%M%S")
-        merged_timings_df["Filename"] = (
+        merged_timings_df["sampleFile"] = (
             merged_timings_df["Site"]
             + "_"
             + merged_timings_df["NewDate"]
@@ -256,11 +256,11 @@ date_range = pd.date_range(start_date, end_date, freq="D", tz="America/Halifax")
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 final_result = create_date_times_list(date_range, sun_times)
 combined_timings = calculate_sunrise_sunset(final_result, latitude, longitude)
-combined_timings["TimeCategory"] = combined_timings.apply(assign_time_category, axis=1)
+combined_timings["category"] = combined_timings.apply(assign_time_category, axis=1)
 # print(combined_timings)
 combined_timings.to_csv("sample-data.csv", date_format='%Y-%m-%d %H:%M:%S', index=False)
 sample_size = args.sample_size  # Change this value to the desired number of samples per category
-random_samples = combined_timings.groupby("TimeCategory").apply(
+random_samples = combined_timings.groupby("category").apply(
     lambda x: x.sample(sample_size)
 )
 
