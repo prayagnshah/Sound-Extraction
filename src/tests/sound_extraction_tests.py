@@ -1,11 +1,8 @@
-# from dotenv import load_dotenv
 import os
 import datetime
 import csv
 import soundfile as sf
 import numpy as np
-# import argparse
-# import logging
 
 
 def get_directories(root_directory):
@@ -370,65 +367,3 @@ def process_audio_files(directory, slice_duration, output_directory):
                 sf.write(filename, chunk, sample_rate)
 
                 start += slice_duration
-
-    # # fmt: off
-    # # Create an ArgumentParser object
-    # parser = argparse.ArgumentParser(
-    #     description='A program that will help to extract recording from the actual long recordings.')
-
-    # parser.add_argument('-r', '--root_directory', type=str, required=True, help='The root directory of the long recordings')  
-    # parser.add_argument('-o', '--output_directory', type=str, help='The output directory to store the extracted audio segments')  
-    # parser.add_argument('-c', '--csv_file_path', type=str, help='Path to the CSV file with the following requirements: Header should include "sample file" and "categories" columns. The "sample file" column should be in the format 20220608_170343, and the "categories" column should contain categories such as "Nocturnal", etc.') 
-    # parser.add_argument('-d', '--duration', type=int, default=3, help='What duration of extracted segments you want?')  
-    # parser.add_argument('-s', '--site_name', type=str,  help='The name of the site')
-    # parser.add_argument('-span', '--span', action='store_true', help='Extract original files instead of spanning') 
-    # parser.add_argument('-e', '--extension', type=str, choices=['.wav', '.flac'], default='.flac', help='The extension of the original audio files')
-    # parser.add_argument('-slice', '--slice', type=int, help='In how many seconds you want to slice the audio files?') 
-    # # Parse the command line arguments
-
-    # args = parser.parse_args()
-
-    # fmt: on
-
-    # Getting the root directory and output directory from the user
-
-#     root_directory = args.root_directory
-#     output_directory = args.output_directory
-#     site_name = args.site_name
-#     csv_file_path = args.csv_file_path
-
-#     # Create the log file name using the output directory
-
-#     log_file = os.path.join(output_directory, "sound_extraction_logs.txt")
-#     log_format = "%(asctime)s - %(levelname)s - %(message)s"
-
-#     # Creating the log format
-
-#     logging.basicConfig(format=log_format, level=logging.INFO, filename=log_file)
-
-#     # If user uses slice to get divide audio files into same length then only function will be activated
-
-#     if args.slice:
-#         directory = root_directory
-#         slice_duration = args.slice
-#         process_audio_files(directory, slice_duration, output_directory)
-
-#     # If user wants to extract the audio files from sample time frame this statement will be executed
-
-#     else:
-#         # Calling the functions
-
-#         directory, all_files = get_directories(root_directory)
-
-#         sampleFile = "sampleFile"
-#         categories_col = "category"
-#         sample_recordings, categories_dict = read_csv_file(
-#             csv_file_path, sampleFile, categories_col
-#         )
-
-#         filtered_recordings_dict = process_recordings(all_files, sample_recordings)
-
-#         export_segment, output_directory = extract_audio_segments(
-#             filtered_recordings_dict, output_directory, site_name, categories_dict
-#         )
-
