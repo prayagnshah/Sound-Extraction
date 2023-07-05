@@ -362,9 +362,19 @@ def process_audio_files(directory, slice_duration, output_directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
             file_str = os.path.splitext(file)[0]
-            file_datetime = datetime.datetime.strptime(file_str, "%Y%m%dT%H%M%S")
+            
+            try:
+                file_datetime = datetime.datetime.strptime(file_str, "%Y%m%dT%H%M%S")
+            
+            except ValueError:
+                logging.error(f"File {file} is not in the correct format. Skipping...")
+                continue
 
-            audio, sample_rate = sf.read(os.path.join(root, file))
+            try:
+                audio, sample_rate = sf.read(os.path.join(root, file))
+            except Exception as e:
+                logging.error(f"Error in the audio file {file}: {e}")
+                continue
 
             total_samples = len(audio)
 
@@ -380,7 +390,7 @@ def process_audio_files(directory, slice_duration, output_directory):
                 ).strftime("%Y%m%dT%H%M%S")
 
                 filename = os.path.join(
-                    output_subdirectory, "{}.wav".format(recording_time)
+                    output_subdirectory, "{}.{}".format(recording_time, args.extension)
                 )
 
                 sf.write(filename, chunk, sample_rate)
