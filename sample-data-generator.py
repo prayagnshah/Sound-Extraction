@@ -197,7 +197,7 @@ def assign_time_category(row):
         return "Daytime"
     elif current_time >= sunset - timedelta(seconds=3600) and current_time <= sunset + timedelta(seconds=5400):
         return "Dusk"
-    elif current_time >= sunset + timedelta(seconds=600) or current_time <= sunrise - timedelta(seconds=3894):
+    elif current_time > sunset + timedelta(seconds=600) or current_time < sunrise - timedelta(seconds=3894):
         return "Nocturnal"
     else:
         return "NULL"
