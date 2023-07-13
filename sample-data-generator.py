@@ -12,25 +12,24 @@ def calculate_sun_times(date, latitude, longitude):
     Returning with dictionary with the calculated time ranges.
     """
 
-    city = LocationInfo("","","America/Halifax",latitude, longitude)
-    s = sun(city.observer, date=date)
-    s_next = sun(city.observer, date=date + timedelta(days=1))
-    
-    
-    halifax_tz = pytz.timezone('America/Halifax')
+    city = LocationInfo("","","Canada/Atlantic",latitude, longitude)
+    s = sun(city.observer, date=date, tzinfo=city.timezone)
+    s_next = sun(city.observer, date=date + timedelta(days=1), tzinfo=city.timezone)
+
  
-    sunrise = s['sunrise'].astimezone(halifax_tz)
-    sunrise_next = s_next['sunrise'].astimezone(halifax_tz)
-    sunset = s_next['sunset'].astimezone(halifax_tz)
+    sunrise = s['sunrise']
+    sunrise_next = s_next['sunrise']
+    sunset = s['sunset']
     # print("Sunrise: ", sunrise)
     # print("Sunset: ", sunset)
+    # print("Sunrise next: ", sunrise_next)
+    # print("sunset test: ", sunset_test)
 
     
     # Nocturnal time ranges
     nocturnal_start_time =   sunset + timedelta(seconds=5400)
     nocturnal_end_time =  sunrise_next - timedelta(seconds=5400)
 
-    
     # Sunrise time ranges
     sunrise_start_time = sunrise - timedelta(seconds=3600)
     sunrise_end_time = sunrise + timedelta(seconds=18000)
@@ -43,7 +42,7 @@ def calculate_sun_times(date, latitude, longitude):
     # Dusk time ranges
     dusk_start_time = sunset - timedelta(seconds=3600)
     dusk_end_time = sunset + timedelta(seconds=5040)
-
+    
 
     # print("Nocturnal start time: ", nocturnal_start_time)
     # print("Nocturnal end time: ", nocturnal_end_time)
@@ -81,10 +80,10 @@ def datetime_range(start, end, delta):
         while current <= end:
             yield current
             current += delta
-    else:
-        while current <= end + timedelta(days=1):
-            yield current
-            current += delta    
+    # else:
+    #     while current <= end + timedelta(days=1):
+    #         yield current
+    #         current += delta    
 
 
 def create_date_times_list(date_range, result):
@@ -133,9 +132,10 @@ def create_date_times_list(date_range, result):
 
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
+        # print(merged_timings)
 
-        merged_timings_df = pd.DataFrame({"date_time": merged_timings})
-        # print(merged_timings_df)
+        merged_timings_df = pd.DataFrame({"date_time": [pd.to_datetime(x, errors="ignore") for x in merged_timings]})
+        # merged_timings_df["datetime"] = merged_timings_df["date_time"].dt.tz_convert(None)
         merged_timings_df["Site"] = "SandPond192450"
         merged_timings_df["ExtFormat"] = "wav"
         merged_timings_df["NewDate"] = merged_timings_df["date_time"]
@@ -147,56 +147,20 @@ def create_date_times_list(date_range, result):
             + merged_timings_df["ExtFormat"]
         )
         
-        merged_timings_df["sunrise"] = res["sunrise"]
-        merged_timings_df["sunset"] = res["sunset"]
-        merged_timings_df["sunrise_next"] = res["sunrise_next"]
+        merged_timings_df["sunrise"] = pd.to_datetime(res["sunrise"],errors="ignore")
+        merged_timings_df["sunset"] = pd.to_datetime(res["sunset"],errors="ignore")
+        merged_timings_df["sunrise_next"] = pd.to_datetime(res["sunrise_next"],errors="ignore")
 
         merged_timings_df = merged_timings_df.drop(["date_time"], axis=1)
+        
         
         
         
         final_result.append(merged_timings_df)
         
     var = pd.concat(final_result, ignore_index=True) 
-    # print(var)
+
     return var
-
-
-# def calculate_sunrise_sunset(df, latitude, longitude):
-#     """
-#     Calculate sunrise and sunset times for each date in the input DataFrame.
-#     This function takes a DataFrame containing a 'NewDate' column with date-time values, and
-#     calculates the corresponding sunrise and sunset times for each date based on the provided
-#     latitude and longitude. The resulting sunrise and sunset times are then added as new columns
-#     to the input DataFrame.
-#     """
-#     # location = LocationInfo(latitude=latitude, longitude=longitude)
-#     city = LocationInfo("", "", "America/Halifax", latitude, longitude)
-    
-    
-
-#     df["NewDate"] = pd.to_datetime(df["NewDate"], format="%Y%m%d_%H%M%S")
-
-#     df["sunrise"] = df["NewDate"].apply(
-#         lambda x: sun(city.observer, date=x.date())['sunrise']
-#     )
-#     df["sunset"] = df["NewDate"].apply(
-#         lambda x: sun(city.observer, date=x.date())['sunset']
-#     )
-#     df["sunrise"] = (
-#         df["sunrise"]
-#         .dt.tz_localize(None)
-#     )
-#     df["sunset"] = (
-#         df["sunset"]
-#         .dt.tz_localize(None)
-#     )
-    
-#     # print(df)
-
-#     df = df.drop_duplicates(subset=["NewDate"], keep="first")
-    
-#     return df
 
 
 # Define time categories based on conditions
@@ -208,21 +172,11 @@ def assign_time_category(row):
     categories include 'EarlyAM', 'MidAM', 'LateAM', 'Nocturnal', 'Dusk', and 'Daytime'.
     """
     
-    # city = LocationInfo("", "", "America/Halifax", latitude, longitude)
-    # halifax_tz = pytz.timezone('America/Halifax')
-    
     sunrise = row["sunrise"]
     sunset = row["sunset"]
     current_time = row["NewDate"]
     sunrise_next = row["sunrise_next"]
 
-    # Calculate the time of the next sunrise
-    # next_day = sun(city.observer, date=current_time.date() + timedelta(days=1))['sunrise']
-    # print(next_day)
-
-    # print(
-    #     f"Sunset: {row['sunset']}, Sunrise: {row['sunrise']}, Current Time: {row['NewDate']}"
-    # )
     
     if current_time >= sunrise - timedelta(seconds=3900) and current_time <= sunrise + timedelta(seconds=3594):
         return "EarlySunrise"
@@ -237,17 +191,7 @@ def assign_time_category(row):
     elif current_time > sunset + timedelta(seconds=600) and current_time < sunrise_next - timedelta(seconds=3894):
         return "Nocturnal"
     else:
-        return "NULL"
-
-
-
-
-
-
-
-
-
-
+        return "Nocturnal"
 
 
 
@@ -273,7 +217,9 @@ date_range = pd.date_range(start_date, end_date, freq="D")
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 
 combined_timings = create_date_times_list(date_range, sun_times)
-# combined_timings = calculate_sunrise_sunset(final_result, latitude, longitude)
+# print(combined_timings)
+
+
 combined_timings["category"] = combined_timings.apply(assign_time_category, axis=1)
 # print(combined_timings)
 combined_timings.to_csv("sample-data.csv", date_format='%Y-%m-%d %H:%M:%S', index=False)
