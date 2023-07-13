@@ -1,9 +1,10 @@
 import pandas as pd
 import argparse
-from datetime import timedelta, datetime
+from datetime import timedelta
 from astral import LocationInfo
 from astral.sun import sun
 import csv
+import random
 
 # fmt: off
 def calculate_sun_times(date, latitude, longitude):
@@ -12,7 +13,7 @@ def calculate_sun_times(date, latitude, longitude):
     Returning with dictionary with the calculated time ranges.
     """
 
-    city = LocationInfo("","","Canada/Atlantic",latitude, longitude)
+    city = LocationInfo("","",args.timezone,latitude, longitude)
     s = sun(city.observer, date=date, tzinfo=city.timezone)
     s_next = sun(city.observer, date=date + timedelta(days=1), tzinfo=city.timezone)
 
@@ -20,11 +21,7 @@ def calculate_sun_times(date, latitude, longitude):
     sunrise = s['sunrise']
     sunrise_next = s_next['sunrise']
     sunset = s['sunset']
-    # print("Sunrise: ", sunrise)
-    # print("Sunset: ", sunset)
-    # print("Sunrise next: ", sunrise_next)
-    # print("sunset test: ", sunset_test)
-
+    
     
     # Nocturnal time ranges
     nocturnal_start_time =   sunset + timedelta(seconds=5400)
@@ -43,15 +40,7 @@ def calculate_sun_times(date, latitude, longitude):
     dusk_start_time = sunset - timedelta(seconds=3600)
     dusk_end_time = sunset + timedelta(seconds=5040)
     
-
-    # print("Nocturnal start time: ", nocturnal_start_time)
-    # print("Nocturnal end time: ", nocturnal_end_time)
-    # print("Sunrise start time: ", sunrise_start_time)
-    # print("Sunrise end time: ", sunrise_end_time)
-    # print("Daytime start time: ", daytime_start_time)
-    # print("Daytime end time: ", daytime_end_time)
-    # print("Dusk start time: ", dusk_start_time)
-    # print("Dusk end time: ", dusk_end_time)
+    
     return {
         
         "nocturnal_start_time": nocturnal_start_time,
@@ -80,11 +69,6 @@ def datetime_range(start, end, delta):
         while current <= end:
             yield current
             current += delta
-    # else:
-    #     while current <= end + timedelta(days=1):
-    #         yield current
-    #         current += delta    
-    
 
 
 def create_date_times_list(date_range, result):
@@ -126,23 +110,14 @@ def create_date_times_list(date_range, result):
                 res["dusk_start_time"], res["dusk_end_time"], timedelta(seconds=1800)
             )
         )
-        
-
-        # print("Nocturnal times: ", nocturnal_times_list)
-        # print("Sunrise times: ", sunrise_times_list)
-        # print("Daytime times: ", daytime_times_list)
-        # print("Dusk times: ", dusk_times_list)
-        
 
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
         for timing in merged_timings:
             data_dict = {
-                "Datetime": timing,
                 "Site": "SandPond192450",
-                "ExtFormat": "wav",
                 "NewDate": timing,
-                "sampleFile": "SandPond192450_" + timing.strftime("%Y%m%d_%H%M%S") + ".wav",
+                "sampleFile": timing.strftime("%Y%m%d_%H%M%S") + ".wav",
                 "sunrise": res["sunrise"],
                 "sunset": res["sunset"],
                 "sunrise_next": res["sunrise_next"]
@@ -183,6 +158,34 @@ def assign_time_category(row):
     else:
         return "Nocturnal"
 
+# Function to create random samples per category
+def create_random_samples(combined_timings, sample_size):
+    """
+    Generates the random samples for each category based on the sample size. 
+    If the sample size is greater than the number of samples in a category, it will print a message and stop the execution.
+    """
+    category_samples = {}
+    for row in combined_timings:
+        category = row["category"]
+        if category not in category_samples:
+            category_samples[category] = []
+        category_samples[category].append(row)
+
+    random_samples = []
+    for category, samples in category_samples.items():
+        
+        if sample_size is None:
+            random_samples.extend(samples)
+        
+        elif len(samples) < sample_size:
+            print(f"Please have smaller sample size for the desired dates mentioned.")
+            break
+        
+        else:
+            random_samples.extend(random.sample(samples, sample_size))
+
+    return random_samples
+
 
 
 parser = argparse.ArgumentParser(
@@ -194,6 +197,7 @@ parser.add_argument('--longitude', type=float, help='Longitude of the site')
 parser.add_argument('--start_date', type=str, help='Start date of the sampling period')
 parser.add_argument('--end_date', type=str, help='End date of the sampling period')
 parser.add_argument('--sample_size', type=int, help='Number of samples per category')
+parser.add_argument('--timezone', default='UTC', type=str, help='Timezone of the site you want to sample')
 
 args = parser.parse_args()
 
@@ -209,28 +213,23 @@ sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_ran
 combined_timings = create_date_times_list(date_range, sun_times)
 # print(combined_timings)
 
+sample_size = args.sample_size
+
 # Adding category to each dictionary in the list
 for row in combined_timings:
     row["category"] = assign_time_category(row)
+    
+
+# Generate random samples per category
+random_samples = create_random_samples(combined_timings, sample_size)
+    
+for sample in random_samples:
+    continue 
+
 
 # Writing the list of dictionaries to a CSV file
-fieldnames = ["Datetime", "Site", "ExtFormat", "NewDate", "sampleFile", "sunrise", "sunset", "sunrise_next", "category"]
+fieldnames = ["Site","NewDate", "sampleFile", "sunrise", "sunset", "sunrise_next", "category"]
 with open("output.csv", "w", newline='') as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
-    writer.writerows(combined_timings)
-
-
-
-# combined_timings["category"] = combined_timings.apply(assign_time_category, axis=1)
-# # print(combined_timings)
-# combined_timings.to_csv("sample-data.csv", date_format='%Y-%m-%d %H:%M:%S', index=False)
-# sample_size = args.sample_size  # Change this value to the desired number of samples per category
-# random_samples = combined_timings.groupby("category").apply(
-#     lambda x: x.sample(sample_size)
-# )
-
-# # Reset index
-# random_samples.reset_index(drop=True, inplace=True)
-# random_samples.to_csv("sample-data.csv", index=False)
-# print(random_samples)
+    writer.writerows(random_samples)
