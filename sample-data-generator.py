@@ -12,7 +12,7 @@ def calculate_sun_times(date, latitude, longitude):
     Returning with dictionary with the calculated time ranges.
     """
 
-    city = LocationInfo("","","Canada/Atlantic",latitude, longitude)
+    city = LocationInfo("","","UTC",latitude, longitude)
     s = sun(city.observer, date=date, tzinfo=city.timezone)
     s_next = sun(city.observer, date=date + timedelta(days=1), tzinfo=city.timezone)
 
@@ -84,6 +84,7 @@ def datetime_range(start, end, delta):
     #     while current <= end + timedelta(days=1):
     #         yield current
     #         current += delta    
+    
 
 
 def create_date_times_list(date_range, result):
@@ -97,6 +98,8 @@ def create_date_times_list(date_range, result):
     final_result = []
 
     for date, res in zip(date_range, result):
+        # print("Date: ", date)
+        # print("Result: ", res)
         
         nocturnal_times_list = list(
             datetime_range(
@@ -124,6 +127,7 @@ def create_date_times_list(date_range, result):
             )
         )
         
+
         # print("Nocturnal times: ", nocturnal_times_list)
         # print("Sunrise times: ", sunrise_times_list)
         # print("Daytime times: ", daytime_times_list)
@@ -133,8 +137,11 @@ def create_date_times_list(date_range, result):
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
         # print(merged_timings)
+        
+        # final_result += merged_timings
+        # print("Final result: ", final_result)
 
-        merged_timings_df = pd.DataFrame({"date_time": [pd.to_datetime(x, errors="ignore") for x in merged_timings]})
+        merged_timings_df = pd.DataFrame({"date_time": [pd.to_datetime(x, errors="coerce") for x in merged_timings]})
         # merged_timings_df["datetime"] = merged_timings_df["date_time"].dt.tz_convert(None)
         merged_timings_df["Site"] = "SandPond192450"
         merged_timings_df["ExtFormat"] = "wav"
