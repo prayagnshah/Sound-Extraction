@@ -1,6 +1,5 @@
-import pandas as pd
 import argparse
-from datetime import timedelta
+from datetime import timedelta, datetime
 from astral import LocationInfo
 from astral.sun import sun
 import csv
@@ -41,6 +40,14 @@ def calculate_sun_times(date, latitude, longitude):
     dusk_end_time = sunset + timedelta(seconds=5040)
     
     
+    # print("Nocturnal start time: ", nocturnal_start_time)
+    # print("Nocturnal end time: ", nocturnal_end_time)
+    # print("Sunrise start time: ", sunrise_start_time)
+    # print("Sunrise end time: ", sunrise_end_time)
+    # print("Daytime start time: ", daytime_start_time)
+    # print("Daytime end time: ", daytime_end_time)
+    # print("Dusk start time: ", dusk_start_time)
+    # print("Dusk end time: ", dusk_end_time)
     return {
         
         "nocturnal_start_time": nocturnal_start_time,
@@ -113,7 +120,9 @@ def create_date_times_list(date_range, result):
 
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
+        # print("Merged timings: ", merged_timings)
         for timing in merged_timings:
+            # if start_date <= timing <= end_date:
             data_dict = {
                 "Site": "SandPond192450",
                 "NewDate": timing,
@@ -124,7 +133,7 @@ def create_date_times_list(date_range, result):
             }
             final_result.append(data_dict)
     
-
+    # print("Final result: ", final_result)
     return final_result
 
 
@@ -205,9 +214,10 @@ args = parser.parse_args()
 
 latitude = args.latitude
 longitude = args.longitude
-start_date = pd.to_datetime(args.start_date)
-end_date = pd.to_datetime(args.end_date)
-date_range = pd.date_range(start_date, end_date, freq="D")
+start_date = datetime.strptime(args.start_date, "%Y-%m-%d")
+start_date -= timedelta(days=1)
+end_date = datetime.strptime(args.end_date, "%Y-%m-%d")
+date_range = [start_date + timedelta(days=day) for day in range((end_date - start_date).days + 1)]
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 
 combined_timings = create_date_times_list(date_range, sun_times)
