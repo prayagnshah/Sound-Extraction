@@ -3,7 +3,7 @@ import argparse
 from datetime import timedelta, datetime
 from astral import LocationInfo
 from astral.sun import sun
-import pytz
+import csv
 
 # fmt: off
 def calculate_sun_times(date, latitude, longitude):
@@ -12,7 +12,7 @@ def calculate_sun_times(date, latitude, longitude):
     Returning with dictionary with the calculated time ranges.
     """
 
-    city = LocationInfo("","","UTC",latitude, longitude)
+    city = LocationInfo("","","Canada/Atlantic",latitude, longitude)
     s = sun(city.observer, date=date, tzinfo=city.timezone)
     s_next = sun(city.observer, date=date + timedelta(days=1), tzinfo=city.timezone)
 
@@ -136,38 +136,21 @@ def create_date_times_list(date_range, result):
 
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
-        # print(merged_timings)
-        
-        # final_result += merged_timings
-        # print("Final result: ", final_result)
+        for timing in merged_timings:
+            data_dict = {
+                "Datetime": timing,
+                "Site": "SandPond192450",
+                "ExtFormat": "wav",
+                "NewDate": timing,
+                "sampleFile": "SandPond192450_" + timing.strftime("%Y%m%d_%H%M%S") + ".wav",
+                "sunrise": res["sunrise"],
+                "sunset": res["sunset"],
+                "sunrise_next": res["sunrise_next"]
+            }
+            final_result.append(data_dict)
+    
 
-        merged_timings_df = pd.DataFrame({"date_time": [pd.to_datetime(x, errors="coerce") for x in merged_timings]})
-        # merged_timings_df["datetime"] = merged_timings_df["date_time"].dt.tz_convert(None)
-        merged_timings_df["Site"] = "SandPond192450"
-        merged_timings_df["ExtFormat"] = "wav"
-        merged_timings_df["NewDate"] = merged_timings_df["date_time"]
-        merged_timings_df["sampleFile"] = (
-            merged_timings_df["Site"]
-            + "_"
-            + merged_timings_df["NewDate"].dt.strftime("%Y%m%d_%H%M%S")
-            + "."
-            + merged_timings_df["ExtFormat"]
-        )
-        
-        merged_timings_df["sunrise"] = pd.to_datetime(res["sunrise"],errors="ignore")
-        merged_timings_df["sunset"] = pd.to_datetime(res["sunset"],errors="ignore")
-        merged_timings_df["sunrise_next"] = pd.to_datetime(res["sunrise_next"],errors="ignore")
-
-        merged_timings_df = merged_timings_df.drop(["date_time"], axis=1)
-        
-        
-        
-        
-        final_result.append(merged_timings_df)
-        
-    var = pd.concat(final_result, ignore_index=True) 
-
-    return var
+    return final_result
 
 
 # Define time categories based on conditions
@@ -226,16 +209,28 @@ sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_ran
 combined_timings = create_date_times_list(date_range, sun_times)
 # print(combined_timings)
 
+# Adding category to each dictionary in the list
+for row in combined_timings:
+    row["category"] = assign_time_category(row)
 
-combined_timings["category"] = combined_timings.apply(assign_time_category, axis=1)
-# print(combined_timings)
-combined_timings.to_csv("sample-data.csv", date_format='%Y-%m-%d %H:%M:%S', index=False)
-sample_size = args.sample_size  # Change this value to the desired number of samples per category
-random_samples = combined_timings.groupby("category").apply(
-    lambda x: x.sample(sample_size)
-)
+# Writing the list of dictionaries to a CSV file
+fieldnames = ["Datetime", "Site", "ExtFormat", "NewDate", "sampleFile", "sunrise", "sunset", "sunrise_next", "category"]
+with open("output.csv", "w", newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(combined_timings)
 
-# Reset index
-random_samples.reset_index(drop=True, inplace=True)
+
+
+# combined_timings["category"] = combined_timings.apply(assign_time_category, axis=1)
+# # print(combined_timings)
+# combined_timings.to_csv("sample-data.csv", date_format='%Y-%m-%d %H:%M:%S', index=False)
+# sample_size = args.sample_size  # Change this value to the desired number of samples per category
+# random_samples = combined_timings.groupby("category").apply(
+#     lambda x: x.sample(sample_size)
+# )
+
+# # Reset index
+# random_samples.reset_index(drop=True, inplace=True)
 # random_samples.to_csv("sample-data.csv", index=False)
 # print(random_samples)
