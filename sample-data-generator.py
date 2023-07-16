@@ -1,10 +1,11 @@
 import argparse
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, time
 from astral import LocationInfo
 from astral.sun import sun
 import csv
 import random
 import pytz
+
 
 # fmt: off
 def calculate_sun_times(date, latitude, longitude):
@@ -79,7 +80,7 @@ def datetime_range(start, end, delta):
             current += delta
 
 
-def create_date_times_list(date_range, result):
+def create_date_times_list(date_range, result, user_start_date):
     """
     Generate a list of date times for different time ranges based on the given range of dates and result. Result is a dictionary with the calculated time ranges.
     This function iterates through the input date_range and result, creating lists of date times for
@@ -88,6 +89,12 @@ def create_date_times_list(date_range, result):
     Site, ExtFormat, and Filename.
     """
     final_result = []
+    
+    # start_date = date_range[0].replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    # print("Start date: ", start_date)
+    
+    # end_date = date_range[-1].replace(hour=23, minute=59, second=59, microsecond=0) - timedelta(days=1)
+    # print("End date: ", end_date)
 
     for date, res in zip(date_range, result):
         # print("Date: ", date)
@@ -122,12 +129,17 @@ def create_date_times_list(date_range, result):
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
         # print("Merged timings: ", merged_timings)
-
-
+        
+        # filtered_merged_timings = [time for time in merged_timings if start_date + timedelta(days=1) < time < end_date]
+        
+        # print("Filtered merged timings: ", filtered_merged_timings)
         
         for timing in merged_timings:
-
-            if start_date <= timing < end_date:
+            # input(timing)
+            # input(start)
+   
+            if user_start_date < timing:
+                
                 data_dict = {
                     "Site": "SandPond192450",
                     "NewDate": timing,
@@ -219,15 +231,26 @@ args = parser.parse_args()
 
 latitude = args.latitude
 longitude = args.longitude
-start_date = datetime.strptime(args.start_date, "%Y-%m-%d").astimezone(pytz.timezone(args.timezone))
-start_date -= timedelta(days=1)
+
+
+user_start_date = datetime.strptime(args.start_date, "%Y-%m-%d").astimezone(pytz.timezone(args.timezone)) 
+
+start_date = user_start_date - timedelta(days=1)
+
 end_date = datetime.strptime(args.end_date, "%Y-%m-%d").astimezone(pytz.timezone(args.timezone))
-end_date += timedelta(days=1)
+
+# end_date = end_date + timedelta(days=1)
+
+
 date_range = [start_date + timedelta(days=day) for day in range((end_date - start_date).days + 1)]
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 
-combined_timings = create_date_times_list(date_range, sun_times)
+combined_timings = create_date_times_list(date_range, sun_times, user_start_date)
 # print(combined_timings)
+
+
+
+
 
 sample_size = args.sample_size
 
