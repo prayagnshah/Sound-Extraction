@@ -2,7 +2,7 @@
 
 ## About
 
-Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
+Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others. This tool will also allow you to generate a CSV file with diel information (i.e., Dusk, Nocturnal, Sunrise and Daytime) based on the recording start times and end times.
 
 ## Types of Installation and you only have to use *one* of them
 
@@ -67,13 +67,19 @@ Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3
 
 ## Usage
 
-1.  Run sound_extraction.py to get the extracted audio files. You need to set the working directory where the downloaded files are located. Here is an example:
+1. Run sound_extraction.py to get the diel information or to generate the CSV file of sample names. Here is an example:
+
+    `python sound_extraction.py -start_date "YYYY-MM-DD" -end_date "YYYY-MM-DD" -lat 43.8379 -lon -72.311 -timezone "Canada/Atlantic" -sample_size 10 -s "site_name"`
+
+Arguments and commands used are required to get the diel information in CSV format which can then be used to extract the audio files. 
+
+2.  Run sound_extraction.py to get the extracted audio files. You need to set the working directory where the downloaded files are located. Here is an example:
 
     `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
 Arguments and commands used are required to get the extraction of audio files according to the sample times. After entering the argument users will be asked to enter the custom `sub-directory name`to store the extracted audio files. If you don't want to enter the custom name then just press `Enter` and it will extract the audio files in the same output directory mentioned in the argument.
 
-2.  Run sound_extraction.py to get the sliced audio files which can handle around 192K sample rate. Here is an example:
+3.  Run sound_extraction.py to get the sliced audio files which can handle around 192K sample rate. Here is an example:
 
     `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -slice 10`
 
@@ -91,6 +97,12 @@ Here's a complete list of all command line arguments:
     -span, Span of the audio file. Extracted audio files will not span to 3 minutes if the original file is shorter.
     -e, Extension of the audio file (.wav or .flac). If your original audio files are flac then you need to use ".wav". Default is flac.
     -slice, Slice the audio file in smaller segments/chunks. Default is 10 seconds.
+    -start_date, Start date of the diel information. Format should be YYYY-MM-DD.
+    -end_date, End date of the diel information. Format should be YYYY-MM-DD.
+    -lat, Latitude value of the site. 
+    -lon, Longitude value of the site.
+    -timezone, Timezone of the site. Format should be "Canada/Atlantic". To get the list of timezone names: https://gist.github.com/prayagnshah/0280d0bde382857a6a21d8b6dc261534
+    -sample_size, Sample size of the diel information. This will provide you with specific number of categories of the diel information.
 
 We can see the arguments list by using the following command:
 
@@ -117,6 +129,10 @@ We can see the arguments list by using the following command:
 2. Original files should be in the format `20220611T202300.wav` or `20220611T202300.flac`. Sample files in CSV should be in the format `20220611_202300.wav` or `20220611_202300.flac` under the heading `sampleFile`. For instance,
 
    ![Sample Image](data/image.png)
+
+If you want to generate your own CSV file then you can follow this code. [Usage](#usage)
+
+3. If using latitude and longitude of their timezone then it will generate the most accurate diel information. If you don't know the latitude and longitude of the site then you can use the following website to get the latitude and longitude of the site: https://www.latlong.net/. List of timezone names are available at https://gist.github.com/prayagnshah/0280d0bde382857a6a21d8b6dc261534.
 
 ## Changelog
 
