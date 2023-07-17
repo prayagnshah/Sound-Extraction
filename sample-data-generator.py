@@ -41,15 +41,6 @@ def calculate_sun_times(date, latitude, longitude):
     dusk_start_time = sunset - timedelta(seconds=3600)
     dusk_end_time = sunset + timedelta(seconds=5040)
     
-    
-    # print("Nocturnal start time: ", nocturnal_start_time)
-    # print("Nocturnal end time: ", nocturnal_end_time)
-    # print("Sunrise start time: ", sunrise_start_time)
-    # print("Sunrise end time: ", sunrise_end_time)
-    # print("Daytime start time: ", daytime_start_time)
-    # print("Daytime end time: ", daytime_end_time)
-    # print("Dusk start time: ", dusk_start_time)
-    # print("Dusk end time: ", dusk_end_time)
     return {
         
         "nocturnal_start_time": nocturnal_start_time,
@@ -80,7 +71,7 @@ def datetime_range(start, end, delta):
             current += delta
 
 
-def create_date_times_list(date_range, result, user_start_date):
+def create_date_times_list(date_range, result, user_start_date, user_end_date):
     """
     Generate a list of date times for different time ranges based on the given range of dates and result. Result is a dictionary with the calculated time ranges.
     This function iterates through the input date_range and result, creating lists of date times for
@@ -89,16 +80,8 @@ def create_date_times_list(date_range, result, user_start_date):
     Site, ExtFormat, and Filename.
     """
     final_result = []
-    
-    # start_date = date_range[0].replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-    # print("Start date: ", start_date)
-    
-    # end_date = date_range[-1].replace(hour=23, minute=59, second=59, microsecond=0) - timedelta(days=1)
-    # print("End date: ", end_date)
 
-    for date, res in zip(date_range, result):
-        # print("Date: ", date)
-        # print("Result: ", res)
+    for _, res in zip(date_range, result):
         
         nocturnal_times_list = list(
             datetime_range(
@@ -128,18 +111,12 @@ def create_date_times_list(date_range, result, user_start_date):
 
         # fmt: off
         merged_timings = nocturnal_times_list + sunrise_times_list + daytime_times_list + dusk_times_list
-        # print("Merged timings: ", merged_timings)
-        
-        # filtered_merged_timings = [time for time in merged_timings if start_date + timedelta(days=1) < time < end_date]
-        
-        # print("Filtered merged timings: ", filtered_merged_timings)
         
         for timing in merged_timings:
-            # input(timing)
-            # input(start)
-   
-            if user_start_date < timing:
-                
+            
+            # Check if the timing is within the user-defined start and end dates
+            if user_start_date <= timing <= user_end_date:
+            
                 data_dict = {
                     "Site": "SandPond192450",
                     "NewDate": timing,
@@ -150,7 +127,6 @@ def create_date_times_list(date_range, result, user_start_date):
                 }
                 final_result.append(data_dict)
     
-    # print("Final result: ", final_result)
     return final_result
 
 
@@ -190,7 +166,13 @@ def create_random_samples(combined_timings, sample_size):
     Generates the random samples for each category based on the sample size. 
     If the sample size is greater than the number of samples in a category, it will print a message and stop the execution.
     """
+    
+    for row in combined_timings:
+        del row["sunrise_next"]
+        del row["NewDate"]
+        
     category_samples = {}
+    
     for row in combined_timings:
         category = row["category"]
         if category not in category_samples:
@@ -232,25 +214,16 @@ args = parser.parse_args()
 latitude = args.latitude
 longitude = args.longitude
 
-
-user_start_date = datetime.strptime(args.start_date, "%Y-%m-%d").astimezone(pytz.timezone(args.timezone)) 
-
+user_start_date = pytz.timezone(args.timezone).localize(datetime.strptime(args.start_date, "%Y-%m-%d"))
 start_date = user_start_date - timedelta(days=1)
 
-end_date = datetime.strptime(args.end_date, "%Y-%m-%d").astimezone(pytz.timezone(args.timezone))
-
-# end_date = end_date + timedelta(days=1)
-
+user_end_date = pytz.timezone(args.timezone).localize(datetime.strptime(args.end_date, "%Y-%m-%d"))
+end_date = user_end_date + timedelta(days=1)
 
 date_range = [start_date + timedelta(days=day) for day in range((end_date - start_date).days + 1)]
 sun_times = [calculate_sun_times(date, latitude, longitude) for date in date_range]
 
-combined_timings = create_date_times_list(date_range, sun_times, user_start_date)
-# print(combined_timings)
-
-
-
-
+combined_timings = create_date_times_list(date_range, sun_times, user_start_date, end_date)
 
 sample_size = args.sample_size
 
@@ -258,16 +231,11 @@ sample_size = args.sample_size
 for row in combined_timings:
     row["category"] = assign_time_category(row)
     
-
 # Generate random samples per category
 random_samples = create_random_samples(combined_timings, sample_size)
-    
-for sample in random_samples:
-    continue 
-
 
 # Writing the list of dictionaries to a CSV file
-fieldnames = ["Site","NewDate", "sampleFile", "sunrise", "sunset", "sunrise_next", "category"]
+fieldnames = ["Site", "sampleFile", "sunrise", "sunset", "category"]
 with open("output.csv", "w", newline='') as f:
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()
