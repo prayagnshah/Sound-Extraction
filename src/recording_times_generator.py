@@ -202,10 +202,10 @@ def main():
     parser.add_argument('-lon','--longitude', type=float, help='Longitude of the site')
     parser.add_argument('-start','--start_date', type=str, help='Start date of the sampling period')
     parser.add_argument('-end','--end_date', type=str, help='End date of the sampling period')
-    parser.add_argument('-sample','--sample_size', type=int, help='Number of samples per category')
-    parser.add_argument('-t','--timezone', default='UTC', type=str, help='Timezone of the site you want to sample')
+    parser.add_argument('-sample','--sample_size', type=int, help='How many number of samples per category you want to generate?')
+    parser.add_argument('-t','--timezone', default='UTC', type=str, help='Timezone of the site you want to sample. Using the timezone of the same latitude and longitude used will provide better results')
     parser.add_argument('-s','--site_name', type=str, help='Name of the site name or ID name to track the samples')
-    parser.add_argument('-ext', '--extension', default=".flac", type=str, help='Extension of the audio files you want to store in the sample list')
+    parser.add_argument('-ext', '--extension', default=".flac", choices=['.wav', '.flac'], type=str, help='Extension of the audio files you want to store in the sample list. It does accept .wav and .flac extensions')
 
     args = parser.parse_args()
 
