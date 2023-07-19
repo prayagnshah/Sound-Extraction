@@ -1,6 +1,8 @@
 import datetime
 import pytest
-from src.tests.recording_times_generator_tests import calculate_sun_times, datetime_range, create_date_times_list
+import sys
+import io
+from src.tests.recording_times_generator_tests import calculate_sun_times, datetime_range, create_date_times_list, assign_time_category, create_random_samples
 
 
 def test_calculate_sun_times():
@@ -116,3 +118,113 @@ def test_datetime_range(start, end, delta, expected):
 def test_create_date_times_list(date_range, result, user_start_date, user_end_date, expected_len):
     final_result = create_date_times_list(date_range, result, user_start_date, user_end_date)
     assert len(final_result) == expected_len
+    
+
+# Define test cases
+def test_assign_time_category_early_sunrise():
+    # Test for the 'EarlySunrise' category
+    row = {
+        "sunrise": datetime.datetime(2023, 7, 19, 6, 0),
+        "sunset": datetime.datetime(2023, 7, 19, 20, 0),
+        "NewDate": datetime.datetime(2023, 7, 19, 5, 59, 59),
+        "sunrise_next": datetime.datetime(2023, 7, 20, 6, 0),
+    }
+    assert assign_time_category(row) == "EarlySunrise"
+
+def test_assign_time_category_mid_sunrise():
+    # Test for the 'MidSunrise' category
+    row = {
+        "sunrise": datetime.datetime(2023, 7, 19, 6, 0),
+        "sunset": datetime.datetime(2023, 7, 19, 20, 0),
+        "NewDate": datetime.datetime(2023, 7, 19, 7, 0),
+        "sunrise_next": datetime.datetime(2023, 7, 20, 6, 0),
+    }
+    assert assign_time_category(row) == "MidSunrise"
+    
+def test_assign_time_category_late_sunrise():
+    # Test for the 'LateSunrise' category
+    row = {
+        "sunrise": datetime.datetime(2023, 7, 19, 6, 0),
+        "sunset": datetime.datetime(2023, 7, 19, 20, 0),
+        "NewDate": datetime.datetime(2023, 7, 19, 10, 23),
+        "sunrise_next": datetime.datetime(2023, 7, 20, 6, 0),
+    }
+    assert assign_time_category(row) == "LateSunrise"
+    
+def test_assign_time_category_daytime():
+    # Test for the 'Daytime' category
+    row = {
+        "sunrise": datetime.datetime(2023, 7, 20, 6, 0),
+        "sunset": datetime.datetime(2023, 7, 20, 20, 0),
+        "NewDate": datetime.datetime(2023, 7, 20, 13, 30),
+        "sunrise_next": datetime.datetime(2023, 7, 21, 6, 0),
+    }
+    assert assign_time_category(row) == "Daytime"
+    
+def test_assign_time_category_dusk():
+    # Test for the 'Dusk' category
+    row = {
+        "sunrise": datetime.datetime(2023, 7, 20, 6, 0),
+        "sunset": datetime.datetime(2023, 7, 20, 20, 0),
+        "NewDate": datetime.datetime(2023, 7, 20, 20, 57),
+        "sunrise_next": datetime.datetime(2023, 7, 21, 6, 0),
+    }
+    assert assign_time_category(row) == "Dusk"
+
+def test_assign_time_category_nocturnal():
+    # Test for the 'Dusk' category
+    row = {
+        "sunrise": datetime.datetime(2023, 7, 22, 6, 0),
+        "sunset": datetime.datetime(2023, 7, 22, 20, 0),
+        "NewDate": datetime.datetime(2023, 7, 20, 1, 28),
+        "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0),
+    }
+    assert assign_time_category(row) == "Nocturnal"
+    
+# Define test cases
+def test_create_random_samples_no_sample_size():
+    # Test when sample_size is None
+    combined_timings = [
+        {"category": "EarlySunrise", "data": "sample1", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "EarlySunrise", "data": "sample2", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "MidSunrise", "data": "sample3", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+    ]
+    sample_size = None
+    result = create_random_samples(combined_timings, sample_size)
+    assert len(result) == 3
+    
+def test_create_random_samples_valid_sample_size():
+    # Test when sample_size is valid for all categories
+    combined_timings = [
+        {"category": "EarlySunrise", "data": "sample1", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "EarlySunrise", "data": "sample2", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "MidSunrise", "data": "sample3", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "MidSunrise", "data": "sample4", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "LateSunrise", "data": "sample5", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "LateSunrise", "data": "sample6", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "Daytime", "data": "sample7", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "Daytime", "data": "sample8", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "Dusk", "data": "sample9", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "Dusk", "data": "sample10", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "Nocturnal", "data": "sample11", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "Nocturnal", "data": "sample12", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+    ]
+    sample_size = 2
+    result = create_random_samples(combined_timings, sample_size)
+    assert len(result) == 12  # 2 samples from each category
+    
+
+def test_create_random_samples_invalid_sample_size():
+    # Test when sample_size is greater than the number of samples in a category
+    combined_timings = [
+        {"category": "EarlySunrise", "data": "sample1", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "EarlySunrise", "data": "sample2", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+        {"category": "MidSunrise", "data": "sample3", "sunrise_next": datetime.datetime(2023, 7, 23, 6, 0), "NewDate": datetime.datetime(2023, 7, 20, 1, 28)},
+    ]
+    sample_size = 5
+    
+    
+    # Calling the function
+    create_random_samples(combined_timings, sample_size)
+    
+    assert "Please have smaller sample size for the desired dates mentioned."

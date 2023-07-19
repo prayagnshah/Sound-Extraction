@@ -192,28 +192,6 @@ def create_random_samples(combined_timings, sample_size):
     return random_samples
 
 
-
-# parser = argparse.ArgumentParser(
-#     description="Generating random samples from a list of date-times"
-# )
-
-# parser.add_argument('-lat','--latitude', required=True, type=float, help='Latitude of the site')
-# parser.add_argument('-lon','--longitude', required=True, type=float, help='Longitude of the site')
-# parser.add_argument('-start','--start_date', type=str, required=True, help='Start date of the sampling period')
-# parser.add_argument('-end','--end_date', type=str, required=True, help='End date of the sampling period')
-# parser.add_argument('-sample','--sample_size', type=int, help='How many number of samples per category you want to generate?')
-# parser.add_argument('-t','--timezone', default='UTC', type=str, help='Timezone of the site you want to sample. Using the timezone of the same latitude and longitude used will provide better results')
-# parser.add_argument('-s','--site_name', type=str, help='Name of the site name or ID name to track the samples')
-# parser.add_argument('-ext', '--extension', default=".flac", choices=['.wav', '.flac'], type=str, help='Extension of the audio files you want to store in the sample list. It does accept .wav and .flac extensions')
-
-# args = parser.parse_args()
-
-# # Calling the variables and functions
-
-# latitude = args.latitude
-# longitude = args.longitude
-# sample_size = args.sample_size
-
 latitude = 40.7128
 longitude = -74.0060
 sample_size = 5
@@ -237,10 +215,3 @@ for row in combined_timings:
     
 # Generate random samples per category
 random_samples = create_random_samples(combined_timings, sample_size)
-
-# # Writing the list of dictionaries to a CSV file
-# fieldnames = ["site", "sampleFile", "sunrise", "sunset", "category"]
-# with open("output.csv", "w", newline='') as f:
-#     writer = csv.DictWriter(f, fieldnames=fieldnames)
-#     writer.writeheader()
-#     writer.writerows(random_samples)
