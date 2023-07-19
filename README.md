@@ -1,5 +1,7 @@
 # Audio-File Extraction
 
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/pypromice.svg)](https://pypi.org/project/sound-extraction/)
+
 ## About
 
 Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
@@ -121,3 +123,19 @@ We can see the arguments list by using the following command:
 ## Changelog
 
 1. All the version changes are mentioned in the [CHANGELOG.md](https://github.com/prayagnshah/Sound-Extraction/blob/main/CHANGELOG.md) file.
+
+## Contributing
+
+Contributions are welcomed and appreciated. Here are some ways to get involved:
+    * Submitting bug reports.
+    * Feature requests or suggestions.
+    * Improving the documentation or providing examples.
+    * Writing code to add optimizations or new features.
+
+Please use the [GitHub issue tracker](https://github.com/prayagnshah/Sound-Extraction/issues) to raise any bugs or to submit feature requests. If something does not work as you might expect, please let us know. If there are features that you feel are missing, please let us know.
+
+Code submissions should be submitted as a pull request.
+
+If you are stuck or need help, raising an issue is a good place to start. This helps us keep common issues in public view.
+
+Please note that we adhere to [code of conduct](https://github.com/prayagnshah/Sound-Extraction/blob/main/CODE_OF_CONDUCT.md)
