@@ -1,10 +1,11 @@
-import argparse
-import datetime
 from astral import LocationInfo
 from astral.sun import sun
+import argparse
+import datetime
 import csv
 import random
 import pytz
+import os
 
 def main():
 # fmt: off
@@ -206,6 +207,7 @@ def main():
     parser.add_argument('-t','--timezone', default='UTC', type=str, help='Timezone of the site you want to sample')
     parser.add_argument('-s','--site_name', type=str, help='The name of the site')
     parser.add_argument('-ext', '--extension', default=".flac", choices=['.wav', '.flac'], type=str, help='The extension of the original audio files')
+    parser.add_argument('-o','--output', default="samples.csv", type=str, help='The path to the folder of the extracted sample audio files')
 
     args = parser.parse_args()
 
@@ -237,7 +239,17 @@ def main():
 
     # Writing the list of dictionaries to a CSV file
     fieldnames = ["site", "sampleFile", "sunrise", "sunset", "category"]
-    with open("output.csv", "w", newline='') as f:
+    
+    # Check if the output path is a directory or a file
+    file_path = args.output
+    
+    if os.path.isdir(file_path):
+        file_path = os.path.join(args.output + "samples.csv")
+    elif os.path.splitext(file_path)[1] == ".csv":
+        file_path = args.output
+    
+    
+    with open(file_path, "w", newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(random_samples)
