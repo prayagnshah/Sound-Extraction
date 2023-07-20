@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sound-extraction",
-    version="1.1.2",
+    version="2.1.2",
     packages=["src"],
     install_requires=[
         "certifi==2023.5.7",
@@ -17,10 +17,16 @@ setup(
         "sentry-sdk==1.25.1",
         "soundfile==0.12.1",
         "urllib3==2.0.3",
+        "astral==3.2",
+        "backports.zoneinfo==0.2.1",
+        "pytz==2023.3",
+        "tzdata==2023.3",
+        
     ],
     entry_points={
         "console_scripts": [
-            "sound-extraction = src.sound_extraction:main",
+            "sound_extraction = src.sound_extraction:main",
+            "recording_times_generator = src.recording_times_generator:main",
         ],
     },
     classifiers=[
