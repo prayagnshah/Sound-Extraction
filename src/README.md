@@ -8,7 +8,7 @@
 
     a. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
 
-    `recording-times-generator --latitude 32.6574 --longitude -85.4443 --start-date 2021-01-01 --end-date 2021-01-07 --timezone "Canada/Atlantic"`
+    `recording_times_generator --latitude 32.6574 --longitude -85.4443 --start-date 2021-01-01 --end-date 2021-01-07 --timezone "Canada/Atlantic"`
 
 
 ## Arguments

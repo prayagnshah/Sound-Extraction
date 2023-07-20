@@ -1,6 +1,6 @@
 # Audio-File Extraction
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/pypromice.svg)](https://pypi.org/project/sound-extraction/)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![PyPI](https://img.shields.io/pypi/v/sound-extraction)
 
 ## About
 
@@ -14,7 +14,7 @@ Use this tool to segment (i.e., clip or slice), copy, and extract short-duration
 
     a. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
 
-    `sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
+    `sound_extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
 and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#arguments) OR
 
@@ -119,6 +119,8 @@ We can see the arguments list by using the following command:
 2. Original files should be in the format `20220611T202300.wav` or `20220611T202300.flac`. Sample files in CSV should be in the format `20220611_202300.wav` or `20220611_202300.flac` under the heading `sampleFile`. For instance,
 
    ![Sample Image](data/image.png)
+
+3. If you do not have the CSV file with sample times then you can generate the CSV file by following this [README](https://github.com/prayagnshah/Sound-Extraction/blob/main/src/README.md)
 
 ## Changelog
 
