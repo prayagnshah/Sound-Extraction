@@ -17,7 +17,7 @@ sentry_dsn = os.getenv("sentry_dsn")
 
 sentry_sdk.init(
     dsn=sentry_dsn,
-    release="v2.0.0",
+    release="v2.0.1",
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     traces_sample_rate=1.0,
