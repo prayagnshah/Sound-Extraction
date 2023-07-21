@@ -244,9 +244,9 @@ def main():
     file_path = args.output
     
     if os.path.isdir(file_path):
-        file_path = os.path.join(args.output + "samples.csv")
-    elif os.path.splitext(file_path)[1] == ".csv":
-        file_path = args.output
+        file_path = os.path.join(file_path, "samples.csv")
+    elif not file_path.endswith(".csv"):
+        file_path += ".csv"
     
     
     with open(file_path, "w", newline='') as f:
