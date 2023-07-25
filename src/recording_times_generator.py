@@ -135,7 +135,7 @@ def main():
         Assign a time category to each row of a DataFrame based on the 'NewDate' column.
         This function takes a DataFrame row containing 'NewDate', 'sunrise', and 'sunset' columns,
         and assigns a time category based on the current time, sunrise, and sunset times. The time
-        categories include 'EarlyAM', 'MidAM', 'LateAM', 'Nocturnal', 'Dusk', and 'Daytime'.
+        categories include 'EarlySunrise', 'MidSunrise', 'LateSunrise', 'Nocturnal', 'Dusk', and 'Daytime'.
         """
         
         sunrise = row["sunrise"]

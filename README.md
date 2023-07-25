@@ -43,7 +43,7 @@ and then you can follow the instructions for the arguments mentioned below to ru
 
 ## Setup (Windows)
 
-Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com/prayagnshah/Sound-Extraction/archive/refs/tags/v1.1.1.zip)
+Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com/prayagnshah/Sound-Extraction/archive/refs/tags/v2.0.1.zip)
 
     python -m venv venv
     venv\Scripts\Activate
@@ -55,7 +55,7 @@ If creating virtual environment gives us an error then open the Powershell with 
 
 ## Setup (Linux)
 
-Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com/prayagnshah/Sound-Extraction/archive/refs/tags/v1.1.1.zip)
+Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com/prayagnshah/Sound-Extraction/archive/refs/tags/v2.0.1.zip)
 
     python -m venv venv
     source venv/bin/activate
@@ -63,7 +63,7 @@ Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com
 
 ## Test Files Usage
 
-Download Test Files: [Test Files](https://drive.google.com/file/d/1iBrAkaLagScc3kRuLkFw_2eUovGU2d8L/view?usp=share_link)
+Download Test Files: [Test Files](https://drive.google.com/file/d/1hdsC9Yx15pU5wDVQADjMv8VoVMASNfzP/view?usp=sharing)
 
     python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
 
