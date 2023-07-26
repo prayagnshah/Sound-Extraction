@@ -24,7 +24,7 @@ bibliography: paper.bib
 Ecologists use digital audio recordings of ambient sounds to monitor changes in habitats, biodiversity, and ecosystem health. Recording devices can produce massive data sets consisting of multitudes of long duration audio files. Machine learning tools can aid in the anlaysis of this big data, but the ground truthing of sounds (e.g., validating species-specific vocalizations) must be done  by listening to, and visualizing, a much smaller fraction of audio. The `Sound-Extraction` Python package enables user-friendly batch subsampling of long duration audio files (Figure 1). The program can segment (aka "clip") and extract (aka "copy") new recordings of a defined duration, using simple command-line arguments. Options include stratified sampling, with subgroups that can be defined by the user, or by the `recording_times_generator` program, which extracts audio bounded by start and end dates, a given location, and the corresponding sunlight phase. The package supports both WAV and FLAC formats. Functionality in `Sound_Extraction` and `recording_times_generator` is primarily handled using two key open source python packages: `soundfile`(Bechtold, 2013) and `astral`(Kennedy, 2009). 
 
 
-![](https://github.com/prayagnshah/Sound-Extraction/blob/main/data/jossWorkflow.png)
+![](data/jossWorkflow.png)
 
 **Figure 1**.  The general workflow of the Python program `Sound-Extraction`. 
 
