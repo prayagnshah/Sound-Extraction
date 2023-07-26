@@ -8,7 +8,7 @@
 
     a. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
 
-    `recording_times_generator --latitude 32.6574 --longitude -85.4443 --start-date 2021-01-01 --end-date 2021-01-07 --timezone "Canada/Atlantic"`
+    `recording_times_generator --latitude 32.6574 --longitude -85.4443 --start-date "2021-01-01" --end-date "2021-01-07" --timezone "Canada/Atlantic"`
 
 
 ## Arguments
@@ -21,9 +21,9 @@ Here's a complete list of arguments that can be used with the program:
     -lon LONGITUDE, --longitude LONGITUDE
                             Longitude of the site
     -start START_DATE, --start_date START_DATE
-                            Start date of the sampling period
+                            Start date of the sampling period. The format should be YYYY-MM-DD.
     -end END_DATE, --end_date END_DATE
-                            End date of the sampling period
+                            End date of the sampling period. The format should be YYYY-MM-DD.
     -t TIMEZONE, --timezone TIMEZONE
                             Timezone of the site you want to sample
     -sample SAMPLE_SIZE, --sample_size SAMPLE_SIZE

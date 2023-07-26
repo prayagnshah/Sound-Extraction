@@ -201,8 +201,8 @@ def main():
 
     parser.add_argument('-lat','--latitude', required=True, type=float, help='Latitude of the site')
     parser.add_argument('-lon','--longitude', required=True, type=float, help='Longitude of the site')
-    parser.add_argument('-start','--start_date', type=str, required=True, help='Start date of the sampling period')
-    parser.add_argument('-end','--end_date', type=str, required=True, help='End date of the sampling period')
+    parser.add_argument('-start','--start_date', type=str, required=True, help='Start date of the sampling period. "YYYY-MM-DD" format')
+    parser.add_argument('-end','--end_date', type=str, required=True, help='End date of the sampling period. "YYYY-MM-DD" format')
     parser.add_argument('-sample','--sample_size', type=int, help='Number of samples per category')
     parser.add_argument('-t','--timezone', default='UTC', type=str, help='Timezone of the site you want to sample')
     parser.add_argument('-s','--site_name', type=str, help='The name of the site')
