@@ -15,31 +15,13 @@ Use this tool to segment (i.e., clip or slice), copy, and extract short-duration
     a. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
 
     `sound_extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
+    `recording_times_generator --latitude 32.6574 --longitude -85.4443 --start-date "2021-01-01" --end-date "2021-01-07" --timezone "Canada/Atlantic"`
 
 and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#arguments) OR
 
-2. If you want to run the program thorugh Docker then follow the steps below: [Docker](#using-dockerfile) OR
-
-3. If you want to run the program from the source files then follow the steps below: [Source-File](#setup-windows).
+2. If you want to run the program from the source files then follow the steps below: [Source-File](#setup-windows).
 
 <b>Note: You can use any one of the installation above to run the program.</b>
-
-## Using Dockerfile
-
-1. Download the Docker application: [Docker](https://www.docker.com/products/docker-desktop).
-
-2. Open the terminal and make sure docker package is installed on your system. If not then run the following two commands:
-
-    `pip install docker`
-    `docker pull prayagshah/sound-extraction`
-
-3. Once the docker is installed and the package is pulled then run the following command to run the program:
-
-    `docker run sound-extraction`
-
-4. After running the above command you will be asked to enter the arguments. Follow the instructions below to enter the arguments:
-
-    `docker run prayagshah/sound-extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
 
 ## Setup (Windows)
 
