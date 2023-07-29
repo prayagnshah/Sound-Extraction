@@ -1,7 +1,7 @@
 ---
 title: 'Sound-Extraction: A Python package for subsampling audio files'
 tags:
-  - Python
+  - python
   - acoustic data
   - audio extraction and segmentation
   - sampling audio
@@ -10,9 +10,11 @@ tags:
 authors:
   - name: Prayag N. Shah
     orcid: 0009-0000-5447-7961
+    equal-contrib: true
     affiliation: 1
   - name: Douglas P. Hynes
     orcid: 0009-0004-8322-6159
+    equal-contrib: true
     affiliation: 1
 date: 26 July 2023
 bibliography: paper.bib
@@ -59,24 +61,12 @@ The `recording_times_generator`works by passing datetimes (from 1-5 July 2021, i
 
 
 **Table 1**: Rules defining the creation of the daily sample recording time list from which audio extractions occur.
-| Category  	| Time chunk                                          	| Maximum no. of samples 	|
-|-----------	|-----------------------------------------------------	|------------------------	|
-| Nocturnal 	| Sunset+1.5H 0M 0S until next day Sunrise-1.5H 0M 0S 	| 11                     	|
-| Sunrise   	| Sunrise-1H 0M 0S until Sunrise+5H 0M 0S             	| 12                     	|
-| Daytime   	| Sunrise+5.5H 0M 0S until Sunset-1H 0M 0S            	| 18                     	|
-| Dusk      	| Sunset-1H 0M 0S until Sunset+1H 24M 0S              	| 6                      	|
+![](table-01.jpg)
 
 This dataframe of datetimes represents a pool of samples that are implicitly passed to the `sample_size` argument, which in turn takes a  random sample (without replacement) from six categories: daytime, dusk, nocturnal, and three morning times--early, mid and late sunrise (Table 2).
 
 **Table 2**: Rules defining the sunlight phase based categorization of extracted recordings.
-|  Categories 	|   Assigned time range	|
-|---	|---	|
-|  Nocturnal 	|   Sunset+0H 10M 0S until next day Sunrise-1H 4M 54S	|
-|  Early Sunrise 	| Sunrise-1H 5M 0S until Sunrise+1H 59M 54S   	|
-|  Mid Sunrise 	|   Sunrise+1H 59M 55S until Sunrise+2H 21M 23S 	|
-|  Late Sunrise 	|  Sunrise+2H 21M 24S until Sunrise+4H 59M 53S 	|
-|  Daytime 	|   Sunrise+4H 59M 54S until Sunset-59M 59S	|
-|  Dusk 	|   Sunset-1H 0M 0S until Sunset+1H 30M 0S	|
+![](table-02.jpg)
 
 Categories can be edited by manuipulating the assigned time chunks and time ranges in the source code. 
 
