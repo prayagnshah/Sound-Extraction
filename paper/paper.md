@@ -23,7 +23,7 @@ bibliography: paper.bib
 
 # Summary
 
-Ecologists use digital audio recordings of ambient sounds to monitor changes in habitats, biodiversity, and ecosystem health. Recording devices can produce massive data sets consisting of multitudes of long duration audio files. Machine learning tools can aid in the anlaysis of this big data, but the ground truthing of sounds (e.g., validating species-specific vocalizations) must be done  by listening to, and visualizing, a much smaller fraction of audio. The `Sound-Extraction` Python package enables user-friendly batch subsampling of long duration audio files (Figure 1). The program can segment (aka "clip") and extract (aka "copy") new recordings of a defined duration, using simple command-line arguments. Options include stratified sampling, with subgroups that can be defined by the user, or by the `recording_times_generator` program, which extracts audio bounded by start and end dates, a given location, and the corresponding sunlight phase. The package supports both WAV and FLAC formats. Functionality in `Sound_Extraction` and `recording_times_generator` is primarily handled using two key open source python packages: `soundfile`(Bechtold, 2013) and `astral`(Kennedy, 2009). 
+Ecologists use digital audio recordings of ambient sounds to monitor changes in habitats, biodiversity, and ecosystem health. Recording devices can produce massive data sets consisting of multitudes of long duration audio files. Machine learning tools can aid in the anlaysis of this big data, but the ground truthing of sounds (e.g., validating species-specific vocalizations) must be done  by listening to, and visualizing, a much smaller fraction of audio. The `Sound-Extraction` Python package enables user-friendly batch subsampling of long duration audio files (Figure 1). The program can segment (aka "clip") and extract (aka "copy") new recordings of a defined duration, using simple command-line arguments. Options include stratified sampling, with subgroups that can be defined by the user, or by the `recording_times_generator` program, which extracts audio bounded by start and end dates, a given location, and the corresponding sunlight phase. The package supports both WAV and FLAC formats. Functionality in `Sound_Extraction` and `recording_times_generator` is primarily handled using two key open source python packages: `soundfile` (Bechtold, 2013) and `astral` (Kennedy, 2009). 
 
 
 ![](jossWorkflow.jpg)
@@ -60,7 +60,9 @@ recording_times_generator
 The `recording_times_generator`works by passing datetimes (from 1-5 July 2021, in this case) through `astral`, and produces a sample recording time every half an hour (n = 48 maximum possible samples per day; Table 1) relative to sunlight phase.
 
 
-**Table 1**: Rules defining the creation of the daily sample recording time list from which audio extractions occur.
+**Table 1**: Rules defining the creation of the daily sample recording time list from which 
+audio extractions occur.
+
 ![](table-01.jpg)
 
 This dataframe of datetimes represents a pool of samples that are implicitly passed to the `sample_size` argument, which in turn takes a  random sample (without replacement) from six categories: daytime, dusk, nocturnal, and three morning times--early, mid and late sunrise (Table 2).
@@ -107,11 +109,11 @@ Bellard, F. (2006). A complete, cross-platform solution to record, convert and s
 
 Bishop, S. (2004). Current and historical timezone database for Python. https://pypi.org/project/pytz/
 
-Michał Budka, Emilia Sokołowska, Adrianna Muszyńska, & Agata Staniewicz (2023). Acoustic indices estimate breeding bird species richness with daily and seasonally variable effectiveness in lowland temperate Białowieża forest. Ecological Indicators, 148, 110027. https://doi.org/10.1016/j.ecolind.2023.110027.
+Budka, M., Sokołowska E., Muszyńska, A., & Staniewicz, A. (2023). Acoustic indices estimate breeding bird species richness with daily and seasonally variable effectiveness in lowland temperate Białowieża forest. Ecological Indicators, 148, 110027. https://doi.org/10.1016/j.ecolind.2023.110027.
 
 Campos, I. B., Fewster, R., Truskinger, A., Towsey, M., Roe, P., Filho, D. V., Lee, W., & Gaskett, A. (2021). Assessing the potential of acoustic indices for protected area monitoring in the Serra do Cipó National Park, Brazil. Ecological Indicators, 120, 106953. https://doi.org/10.1016/j.ecolind.2020.106953
 
-Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., Wieser, E., Taylor, J., Berg, S., Smith, N. J., Kern, R., Picus, M., Hoyer, S., van Kerkwijk, M. H., Brett, M., Haldane, A., del Rıo, J. F., Wiebe, M., Peterson, P., Oliphant, T. E. (2020). Array programming with NumPy. Nature, 585(7825), 357–362.
+Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., Wieser, E., Taylor, J., Berg, S., Smith, N. J., Kern, R., Picus, M., Hoyer, S., van Kerkwijk, M. H., Brett, M., Haldane, A., del Rıo, J. F., Wiebe, M., Peterson, P., & Oliphant, T. E. (2020). Array programming with NumPy. Nature, 585(7825), 357–362.
 https://doi.org/10.1038/s41586-020-2649-2
 
 Kennedy, S. (2009). Package for calculating the times of various aspects of the sun and moon. https://astral.readthedocs.io/en/latest/
@@ -126,7 +128,7 @@ Roe, P., Eichinski, P., Fuller, R. A., McDonald, P. G., Schwarzkopf, L., Towsey,
 
 Szewczak, J. M. (2023). The benefits of full-spectrum data for analyzing bat echolocation calls. http://www.sonobat.com
 
-Truskinger, A., MacAskill, N., Mercer, J., Scarpelli, M. D. A. (2023). QutEcoacoustics/emu: Support for AudioMoth CONFIG.TXT files improved
+Truskinger, A., MacAskill, N., Mercer, J., & Scarpelli, M. D. A. (2023). QutEcoacoustics/emu: Support for AudioMoth CONFIG.TXT files improved
 https://github.com/QutEcoacoustics/emu
 
 Wimmer, J., Towsey, M., Roe, P., & Williamson, I. (2013). Sampling environmental acoustic recordings to determine bird species richness. Ecological Applications, 23(6), 1419–1428. http://www.jstor.org/stable/23596835
