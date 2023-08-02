@@ -34,7 +34,7 @@ Ecologists use digital audio recordings of ambient sounds to monitor changes in 
 
 The availability of low-cost hardware and innovative software has facilitated long-term field deployments of acoustic devices for ecological research and monitoring (Morgan and Braasch, 2021; Roe et al. 2021). Ecologists can extract ecologically significant information from the resulting--often massive--volumes of audio data produced by recording devices (often referred to as "autonomous recording units", or ARUs), through the computation of acoustic indices (Campos et al., 2021) or by discriminating features with machine learning techniques (Prince et al., 2019), among others. But teasing out relavant biological information is a laborious process, requiring many, often repetitive, tasks that can hinder analyses. For example, many algorithim-aided analsyes still require expert validation of the sound content itself. In this case, the acoustic analyst must navigate through a myraid of recordings, creating sound clips and sprectrograms to manually skim, scan, and listen to (Wimmer et al., 2013; Budka et al., 2023). Preceding validation, audio recordings must often be sampled, which includes serveral intermediate tasks, such as the running of sampling scripts to assign recordings to various subgroupings. Recordings are then selected, segmented according the sampling regime, and finally extracted (i.e., copied and moved) with standardized durations to new locations. 
 
-The computational limits of software and hardware presents other challenges. In certain bioacoustic tools, analyses may be optimzed with audio of specifc durations (e.g., SonoBat; Szewczak, 2010), hence presenting the need for one to segment those audio files that do not fit within a computational optimum. `Sound-Extraction` enables one to slice long-duration audio recordings into shorter durations of uniform length, while parsing and preserving the datetimes in file names.
+The computational limits of software and hardware presents other challenges. In certain bioacoustic tools, analyses may be optimzed with audio of specific durations (e.g., SonoBat; Szewczak, 2010), hence presenting the need for one to segment those audio files that do not fit within a computational optimum. `Sound-Extraction` enables one to slice long-duration audio recordings into shorter durations of uniform length, while parsing and preserving the datetimes in file names.
 
 To help facilitate manual processing tasks, and comparisons of audio data sets with standardized samples, we present `Sound-Extraction`, an audio extraction program that enables users to sample, clip, copy, and move recordings to some pre-defined folder structure. Written in Python, users may define and import lists of subgroups and their corresponding audio files, the latter of which are then clipped and copied in batches on the basis of their datetimes and subgroupings. The program utilizes basic data structures like dictionaries, strings and lists, and supports those working with FLAC or WAV audio formats, and frequencies up to 256,000 hertz. `Sound-Extraction` efficently manages datetime objects; both sample and input recording datetimes are stored in data dictionaries, with the original recordings serving as keys and the corresponding sample files as values in the `Sound-Extraction` tool. In this way, sample files are assigned correctly to the original audio files, and filtered (i.e., sampled) files are passed through the `soundfile` library for the final extraction. The `soundfile` library enables the storage of audio data as NumPy arrays (Harris et al., 2020), facilitating seamless extraction of audio clips according to user-defined subgroups, or with groups created via the`recording_time_generator`, which samples recordings based on the sunrise and sunset times of given location and date.
 
@@ -57,7 +57,7 @@ recording_times_generator
 --sample_size 1
 ```
 
-The `recording_times_generator`works by passing datetimes (from 1-5 July 2021, in this case) through `astral`, and produces a sample recording time every half an hour (n = 48 maximum possible samples per day; Table 1) relative to sunlight phase.
+The `recording_times_generator` works by passing datetimes (from 1-5 July 2021, in this case) through `astral`, and produces a sample recording time every half an hour (n = 48 maximum possible samples per day; Table 1) relative to sunlight phase.
 
 
 **Table 1**: Rules defining the creation of the daily sample recording time list from which 
@@ -65,12 +65,12 @@ audio extractions occur.
 
 ![](table-01.jpg)
 
-This dataframe of datetimes represents a pool of samples that are implicitly passed to the `sample_size` argument, which in turn takes a  random sample (without replacement) from six categories: daytime, dusk, nocturnal, and three morning times--early, mid and late sunrise (Table 2).
+This dataframe of datetimes represents a pool of samples that are implicitly passed to the `n` `sample_size` argument, which in turn takes a `n` random sample (without replacement) from six categories: daytime, dusk, nocturnal, and three morning times--early, mid and late sunrise (Table 2).
 
 **Table 2**: Rules defining the sunlight phase based categorization of extracted recordings.
 ![](table-02.jpg)
 
-Categories can be edited by manuipulating the assigned time chunks and time ranges in the source code. 
+Categories can be edited by manipulating the assigned time chunks and time ranges in the source code. 
 
 ### 2. Provide `Sound-Extraction` with the list of recordings and subgroupings  
 
@@ -95,7 +95,7 @@ sound-extraction
 --slice 15
 ```
 
-In some bioacoustic analyses, large audio recordings can present computational challenges. In this example, the `Sound-Extraction` program is used to batch segment long-duration recordings into shorter, contiguous, clips. The option `--slice` defines the output duration, in seconds, of each segmented audio file. The function segments recordings but maintains the temporal continuity of the data, by parsing and writing corresponding datetimes (or timestamps) into the segmented recordings. For example, a 3600 second-long recording (e.g., "20230622_020000.wav"), sliced by 15 seconds, would produce 240 15-second long recordings with file names as follows: "20230622_020000.wav", "20230622_02015.wav", "20230622_020030.wav", and so on.
+In some bioacoustic analyses, large audio recordings can present computational challenges. In this example, the `Sound-Extraction` program is used to batch segment long-duration recordings into shorter, contiguous, clips. The option `--slice` defines the output duration, in seconds, of each segmented audio file. The function segments recordings but maintains the temporal continuity of the data, by parsing and writing corresponding datetimes (or timestamps) into the segmented recordings. For example, a 3600 second-long recording (e.g., "20230622_020000.wav"), sliced by 15 seconds, would produce 240 15-second long recordings with file names as follows: "20230622_020000.wav", "20230622_020015.wav", "20230622_020030.wav", and so on.
 
 # Acknowledgements
 

@@ -6,20 +6,27 @@
 
 Use this tool to segment (i.e., clip or slice), copy, and extract short-duration recordings, from long-duration WAV or FLAC files. Segmenting audio files into smaller parts can make recordings compatible for certain analytical workflows and allow for easier manipulation and sharing. Segment and extracting recordings based on a list of recording start times (date times) and a desired duration. This allows for applications such as the extraction of stratified audio samples, among others.
 
-## Types of Installation and you only have to use *one* of them
+## There are two ways of installation and you only have to use *one* of them
 
-1. Download the python package:
+### 1. Download the python package:
     
     `pip install sound-extraction`
 
-    a. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
+**a**. After the installation you can use the following command to run the program or use `--help` to see the arguments list:
 
-    `sound_extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
-    `recording_times_generator --latitude 32.6574 --longitude -85.4443 --start-date "2021-01-01" --end-date "2021-01-07" --timezone "Canada/Atlantic"`
+    sound_extraction -r "path/to/original/audio/files" -o "path/to/output/folder" -c "path/to/csv/file" -s "site_name"
 
-and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#arguments) OR
+and then you can follow the instructions for the arguments mentioned below to run the program. [Python-Package](#arguments)
 
-2. If you want to run the program from the source files then follow the steps below: [Source-File](#setup-windows).
+**b**. You can download the test files from the link and use the following command to run the program: [Test Files](https://drive.google.com/drive/folders/1I1fgRskCXHCaKkUdxV-TbQW6Vc-hyMMZ?usp=sharing)
+
+    sound_extraction -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
+
+ OR
+
+### 2. If you want to run the program from the source files then follow the steps below: [Source-File](#setup-windows).
+    
+    git clone https://github.com/prayagnshah/Sound-Extraction.git
 
 <b>Note: You can use any one of the installation above to run the program.</b>
 
@@ -43,23 +50,17 @@ Download Audio-File Extraction Files: [Sound-File Extraction](https://github.com
     source venv/bin/activate
     pip install -r requirements.txt
 
-## Test Files Usage
-
-Download Test Files: [Test Files](https://drive.google.com/file/d/1hdsC9Yx15pU5wDVQADjMv8VoVMASNfzP/view?usp=sharing)
-
-    python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
-
 ## Usage
 
 1.  Run sound_extraction.py to get the extracted audio files. You need to set the working directory where the downloaded files are located. Here is an example:
 
-    `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"`
+    `python sound_extraction.py -r "path/to/original/audio/files" -o "path/to/output/folder" -c "path/to/csv/file" -s "site_name"`
 
 Arguments and commands used are required to get the extraction of audio files according to the sample times. After entering the argument users will be asked to enter the custom `sub-directory name`to store the extracted audio files. If you don't want to enter the custom name then just press `Enter` and it will extract the audio files in the same output directory mentioned in the argument.
 
 2.  Run sound_extraction.py to get the sliced audio files which can handle around 192K sample rate. Here is an example:
 
-    `python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -slice 10`
+    `python sound_extraction.py -r "path/to/original/audio/files" -o "path/to/output/folder" -slice 10`
 
 Arguments and commands used are required to get the slicing of larger audio files into smaller audio files of your choice.
 
@@ -87,6 +88,12 @@ We can see the arguments list by using the following command:
 3. Please open an issue if you have any questions or suggestions to add any features.
 
 4. I will keep on updating the code and making it more efficient.
+
+## Test Files Usage
+
+Download Test Files: [Test Files](https://drive.google.com/drive/folders/1I1fgRskCXHCaKkUdxV-TbQW6Vc-hyMMZ?usp=sharing)
+
+    python sound_extraction.py -r "/path/to/original/audio/files" -o "/path/to/output/folder" -c "/path/to/csv/file" -s "site_name"
 
 ## Error Handling
 

@@ -17,9 +17,9 @@ Here's a complete list of arguments that can be used with the program:
 
     -h, --help            show this help message and exit
     -lat LATITUDE, --latitude LATITUDE
-                            Latitude of the site
+                            Latitude of the site. It should follow the format `DD.DDDD`
     -lon LONGITUDE, --longitude LONGITUDE
-                            Longitude of the site
+                            Longitude of the site. It should follow the format `DD.DDDD`
     -start START_DATE, --start_date START_DATE
                             Start date of the sampling period. The format should be YYYY-MM-DD.
     -end END_DATE, --end_date END_DATE
