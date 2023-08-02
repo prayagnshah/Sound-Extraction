@@ -14,7 +14,7 @@ authors:
     affiliation: 1
   - name: Douglas P. Hynes
     orcid: 0009-0004-8322-6159
-    equal-contrib: true
+    equal-contrib: false
     affiliation: 1
 date: 26 July 2023
 bibliography: paper.bib
