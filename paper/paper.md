@@ -10,12 +10,13 @@ tags:
 authors:
   - name: Prayag N. Shah
     orcid: 0009-0000-5447-7961
-    equal-contrib: true
     affiliation: 1
   - name: Douglas P. Hynes
     orcid: 0009-0004-8322-6159
-    equal-contrib: false
     affiliation: 1
+affiliations:
+  - name: Environment and Climate Change Canada, Canadian Wildlife Service, Nova Scotia, Canada
+    index: 1
 date: 26 July 2023
 bibliography: paper.bib
 
