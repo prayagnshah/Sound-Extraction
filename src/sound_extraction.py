@@ -23,6 +23,7 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
+
 def main():
     def get_directories(root_directory):
         """
@@ -362,12 +363,16 @@ def main():
         for root, dirs, files in os.walk(directory):
             for file in files:
                 file_str = os.path.splitext(file)[0]
-                
+
                 try:
-                    file_datetime = datetime.datetime.strptime(file_str, "%Y%m%dT%H%M%S")
-                
+                    file_datetime = datetime.datetime.strptime(
+                        file_str, "%Y%m%dT%H%M%S"
+                    )
+
                 except ValueError:
-                    logging.error(f"File {file} is not in the correct format. Skipping...")
+                    logging.error(
+                        f"File {file} is not in the correct format. Skipping..."
+                    )
                     continue
 
                 try:
@@ -390,7 +395,8 @@ def main():
                     ).strftime("%Y%m%dT%H%M%S")
 
                     filename = os.path.join(
-                        output_subdirectory, "{}.{}".format(recording_time, args.extension)
+                        output_subdirectory,
+                        "{}{}".format(recording_time, args.extension),
                     )
 
                     sf.write(filename, chunk, sample_rate)
@@ -457,6 +463,7 @@ def main():
         export_segment, output_directory = extract_audio_segments(
             filtered_recordings_dict, output_directory, site_name, categories_dict
         )
+
 
 if __name__ == "__main__":
     main()
