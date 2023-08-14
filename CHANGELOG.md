@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the issue in having extracted files with two dots in the extension. The files are being extracted in proper format now.
 - Fixed the minor changes in the JOSS paper .bib and .md files.
 
-###
+### Added
 
 - Added the timezones list which are supported by the program in the README.md file.
 
