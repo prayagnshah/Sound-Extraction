@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="sound-extraction",
-    version="2.0.1",
+    version="2.0.2",
     packages=["src"],
     install_requires=[
         "certifi==2023.5.7",
@@ -21,7 +21,6 @@ setup(
         "backports.zoneinfo==0.2.1",
         "pytz==2023.3",
         "tzdata==2023.3",
-        
     ],
     entry_points={
         "console_scripts": [

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2023-08-14
+
+### Fixed
+
+- Fixed the issue in having extracted files with two dots in the extension. The files are being extracted in proper format now.
+- Fixed the minor changes in the JOSS paper .bib and .md files.
+
+###
+
+- Added the timezones list which are supported by the program in the README.md file.
+
 ## [2.0.1] - 2023-07-20
 
 ### Fixed
