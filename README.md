@@ -1,6 +1,6 @@
 # Audio-File Extraction
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![PyPI](https://img.shields.io/pypi/v/sound-extraction) [![status](https://joss.theoj.org/papers/96d83a442ea8aad19a032a7579414f54/status.svg)](https://joss.theoj.org/papers/96d83a442ea8aad19a032a7579414f54)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![PyPI](https://img.shields.io/pypi/v/sound-extraction)
 
 ## About
 
