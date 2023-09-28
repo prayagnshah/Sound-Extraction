@@ -28,6 +28,7 @@ def get_directories(root_directory):
 
     return directory, all_files
 
+
 def read_csv_file(csv_file_path, sampleFile, categories_col):
     """
     Reads data from a CSV file and filters it based on a column name which has sample audio files and categories column. It returns sample recordings and
@@ -80,6 +81,7 @@ def read_csv_file(csv_file_path, sampleFile, categories_col):
     categories_dict = {k: v for k, v in zip(sample_recordings, categories)}
 
     return sample_recordings, categories_dict
+
 
 def process_recordings(all_files, sample_recordings):
     """
@@ -157,6 +159,7 @@ def process_recordings(all_files, sample_recordings):
 
     return filtered_recordings_dict
 
+
 def generate_subdir_name():
     """
     Function to generate a subdirectory name for the output files.
@@ -165,6 +168,7 @@ def generate_subdir_name():
     user_input = input("Enter the subdirectory name: ")
 
     return f"{user_input}"
+
 
 def extract_audio_segments(
     filtered_recordings_dict, output_directory, site_name, categories_dict
@@ -192,7 +196,7 @@ def extract_audio_segments(
     output_subdirectory = os.path.join(output_directory, subdir_name)
     os.makedirs(output_subdirectory, exist_ok=True)
 
-    duration = datetime.timedelta(minutes=args.duration)
+    duration = datetime.timedelta(minutes=3)
 
     directories, all_files = get_directories(root_directory)
 
@@ -216,16 +220,12 @@ def extract_audio_segments(
 
             split_key = os.path.splitext(key)[0]
 
-            start_time_parent = datetime.datetime.strptime(
-                split_key, "%Y%m%dT%H%M%S"
-            )
+            start_time_parent = datetime.datetime.strptime(split_key, "%Y%m%dT%H%M%S")
 
             for snippet in value:
                 start_time_str = os.path.splitext(snippet)[0]
 
-                start_time = datetime.datetime.strptime(
-                    start_time_str, "%Y%m%d_%H%M%S"
-                )
+                start_time = datetime.datetime.strptime(start_time_str, "%Y%m%d_%H%M%S")
 
                 snippet_start_time = start_time - start_time_parent
 
@@ -258,17 +258,15 @@ def extract_audio_segments(
                     # Checking if the duration of the snippet is greater than the next key's start time and flag "-span" is used then it won't concatenate the audio files
 
                     if (
-                        not args.span
-                        and start_time + duration_new > next_key_start_time
+                        # not args.span
+                        start_time + duration_new
+                        > next_key_start_time
                     ):
                         parent_duration_time = len(audio_file) / samplerate
                         time_duration_second = (
-                            parent_duration_time
-                            - snippet_start_time.total_seconds()
+                            parent_duration_time - snippet_start_time.total_seconds()
                         )
-                        time_duration = datetime.timedelta(
-                            seconds=time_duration_second
-                        )
+                        time_duration = datetime.timedelta(seconds=time_duration_second)
 
                         next_audio_file, next_samplerate = sf.read(
                             os.path.join(directory, next_key)
@@ -277,9 +275,7 @@ def extract_audio_segments(
                         remaining_duration = duration_new - time_duration
 
                         remaining_audio = next_audio_file[
-                            : int(
-                                remaining_duration.total_seconds() * next_samplerate
-                            )
+                            : int(remaining_duration.total_seconds() * next_samplerate)
                             + 1
                         ]
 
@@ -317,6 +313,7 @@ def extract_audio_segments(
                 )
 
     return export_segment, output_subdirectory
+
 
 def process_audio_files(directory, slice_duration, output_directory):
     """
