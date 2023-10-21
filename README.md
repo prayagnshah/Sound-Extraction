@@ -130,3 +130,7 @@ Code submissions should be submitted as a pull request.
 If you are stuck or need help, raising an issue is a good place to start. This helps us keep common issues in public view.
 
 Please note that we adhere to [code of conduct](https://github.com/prayagnshah/Sound-Extraction/blob/main/CODE_OF_CONDUCT.md)
+
+## Research Paper
+
+If you want to find how we are using this tool in our research then you can read our paper: [Research-Paper](paper/Sound-Extraction.html)
