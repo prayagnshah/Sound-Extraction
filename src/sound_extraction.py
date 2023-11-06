@@ -212,7 +212,7 @@ def main():
         output_subdirectory = os.path.join(output_directory, subdir_name)
         os.makedirs(output_subdirectory, exist_ok=True)
 
-        duration = datetime.timedelta(minutes=args.duration)
+        duration = datetime.timedelta(seconds=args.duration)
 
         directories, all_files = get_directories(root_directory)
 
@@ -259,7 +259,7 @@ def main():
                     # Due to the fact that the audio files are not of 3 mins duration so we need to check if the duration is less than 3 mins then we need to add the next audio file to it
 
                     if current_key_index + 1 < len(recording_keys):
-                        duration_new = datetime.timedelta(minutes=args.duration)
+                        duration_new = datetime.timedelta(seconds=args.duration)
 
                         next_key = recording_keys[current_key_index + 1]
 
@@ -411,11 +411,11 @@ def main():
     parser.add_argument('-r', '--root_directory', type=str, required=True, help='The path to the folder containing the original recordings')  
     parser.add_argument('-o', '--output_directory', type=str, help='The path to the folder of the extracted audio segments')  
     parser.add_argument('-c', '--csv_file_path', type=str, help='The path to the CSV file. The header must include "sampleFile" and may include a "category" column. Recording named within the "sampleFile" column should be in the format "YYYYMMDD_HHMMSS"; if included, subgroups within "category" can be defined by the user, the recordings_times_generator.py (https://github.com/prayagnshah/Sound-Extraction/blob/main/src/README.md), or left blank"') 
-    parser.add_argument('-d', '--duration', type=int, default=3, help='The desired duration of the extracted segments')  
+    parser.add_argument('-d', '--duration', type=float, default=180, help='The desired duration of the extracted segments')  
     parser.add_argument('-s', '--site_name', type=str,  help='The name of the site')
     parser.add_argument('-span', '--span', action='store_true', help='Extract original files instead of spanning; see README for more information') 
     parser.add_argument('-e', '--extension', type=str, choices=['.wav', '.flac'], default='.flac', help='The extension of the original audio files')
-    parser.add_argument('-slice', '--slice', type=int, help='Duration (in seconds) of the sliced audio files') 
+    parser.add_argument('-slice', '--slice', type=float, help='Duration (in seconds) of the sliced audio files') 
     # Parse the command line arguments
 
     args = parser.parse_args()
