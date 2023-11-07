@@ -133,4 +133,4 @@ Please note that we adhere to [code of conduct](https://github.com/prayagnshah/S
 
 ## Research Paper
 
-If you want to find how we are using this tool in our research then you can read our paper: [Research-Paper](paper/Sound-Extraction.html)
+If you want to find how we are using this tool in our research then you can read our paper: [Research-Paper](paper/Sound-Extraction.pdf)
