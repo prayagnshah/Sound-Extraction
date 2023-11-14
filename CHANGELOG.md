@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.4] - 2023-11-14
+
+### Fixed
+
+- Removed the warning message of `ImportError: cannot import name 'main' from 'src.recording_times_generator'` when running the program from CLI.
+
+
 ## [2.0.3] - 2023-11-06
+
+### Fixed
 
 - Fixed the structure of argument start date and end date. i.e start-date to start_date and end-date to end_date.
 - Updated the readme by including the research paper. 
